@@ -2,9 +2,6 @@ const { getFirestore, isFirebaseReady } = require('../../../config/firebase');
 const { AppError } = require('../../../utils/helpers');
 
 class OdontologiaService {
-  /**
-   * Verificar estado del módulo y conexión a Firestore
-   */
   async getStatus() {
     return {
       institution: 'Clínica Odontológica',
@@ -15,9 +12,6 @@ class OdontologiaService {
     };
   }
 
-  /**
-   * Obtener colección de pacientes
-   */
   async getAllPacientes() {
     const db = getFirestore();
     if (!db) {
@@ -27,9 +21,6 @@ class OdontologiaService {
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
-  /**
-   * Crear paciente con historial odontológico embebido
-   */
   async createPaciente(data) {
     const db = getFirestore();
     if (!db) {
@@ -43,7 +34,6 @@ class OdontologiaService {
       telefono: data.telefono || null,
       email: data.email || null,
       fecha_creacion: new Date().toISOString(),
-      // Patrón embebido: historial odontológico dentro del paciente
       historial_odontologico: data.historial_odontologico || {
         alergias_anestesia: false,
         enfermedades_periodontales: false,
@@ -56,9 +46,6 @@ class OdontologiaService {
     return { id: docRef.id, ...pacienteData };
   }
 
-  /**
-   * Registrar cita odontológica (Patrón referenciado a paciente y odontólogo)
-   */
   async createCita(data) {
     const db = getFirestore();
     if (!db) {
@@ -71,7 +58,7 @@ class OdontologiaService {
       fecha_hora: data.fecha_hora,
       motivo_consulta: data.motivo_consulta,
       tratamiento_propuesto: data.tratamiento_propuesto || '',
-      estado: data.estado || 'programada', // programada, realizada, cancelada
+      estado: data.estado || 'programada',
       costo_estimado: data.costo_estimado || 0,
       creado_en: new Date().toISOString(),
     };
@@ -80,9 +67,6 @@ class OdontologiaService {
     return { id: docRef.id, ...citaData };
   }
 
-  /**
-   * Listar citas
-   */
   async getAllCitas() {
     const db = getFirestore();
     if (!db) {

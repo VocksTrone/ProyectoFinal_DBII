@@ -1,52 +1,63 @@
-const admin = require('firebase-admin');
 const fs = require('fs');
 const path = require('path');
+const { initializeApp, getApps, cert } = require('firebase-admin/app');
+const { getFirestore: getFirestoreInstance } = require('firebase-admin/firestore');
 const config = require('./env');
 
 let firestore = null;
 let isFirebaseInitialized = false;
 
-/**
- * Inicializar Firebase Admin SDK (Clínica Odontológica)
- */
 const initFirebase = () => {
-  if (admin.apps.length > 0) {
-    firestore = admin.firestore();
+  if (getApps().length > 0) {
+    if (!firestore) {
+      firestore = getFirestoreInstance();
+    }
     isFirebaseInitialized = true;
     return firestore;
   }
 
   try {
-    const serviceAccountPath = config.firebase.serviceAccountPath
-      ? path.resolve(process.cwd(), config.firebase.serviceAccountPath)
-      : null;
+    let serviceAccountPath = null;
+    const candidatePaths = [
+      config.firebase.serviceAccountPath ? path.resolve(process.cwd(), config.firebase.serviceAccountPath) : null,
+      config.firebase.serviceAccountPath ? path.resolve(__dirname, '../../', config.firebase.serviceAccountPath) : null,
+      path.resolve(__dirname, 'firebase-key.json'),
+      path.resolve(__dirname, '../../../credentials/clinica_odontologica_firebase.json'),
+    ].filter(Boolean);
 
-    if (serviceAccountPath && fs.existsSync(serviceAccountPath)) {
+    for (const candidate of candidatePaths) {
+      if (fs.existsSync(candidate)) {
+        serviceAccountPath = candidate;
+        break;
+      }
+    }
+
+    if (serviceAccountPath) {
       const serviceAccount = require(serviceAccountPath);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+      const app = initializeApp({
+        credential: cert(serviceAccount),
       });
-      console.log('✅ [Clínica Odontológica] Firebase inicializado con archivo Service Account');
-      firestore = admin.firestore();
+      firestore = getFirestoreInstance(app);
       isFirebaseInitialized = true;
+      console.log(`[Clínica Odontológica] Firebase Firestore inicializado con (${path.basename(serviceAccountPath)})`);
     } else if (config.firebase.projectId && config.firebase.clientEmail && config.firebase.privateKey) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
+      const app = initializeApp({
+        credential: cert({
           projectId: config.firebase.projectId,
           clientEmail: config.firebase.clientEmail,
           privateKey: config.firebase.privateKey,
         }),
       });
-      console.log('✅ [Clínica Odontológica] Firebase inicializado con variables de entorno');
-      firestore = admin.firestore();
+      firestore = getFirestoreInstance(app);
       isFirebaseInitialized = true;
+      console.log('[Clínica Odontológica] Firebase Firestore inicializado con variables de entorno');
     } else {
       console.warn(
-        '⚠️  [Clínica Odontológica] Firebase no configurado aún (colocar service account en .env o archivo JSON)'
+        '[Clínica Odontológica] Firebase no configurado aún (colocar service account en .env o archivo JSON)'
       );
     }
   } catch (error) {
-    console.error('❌ [Clínica Odontológica] Error inicializando Firebase:', error.message);
+    console.error('[Clínica Odontológica] Error inicializando Firebase:', error.message);
   }
 
   return firestore;
@@ -60,7 +71,6 @@ const getFirestore = () => {
 };
 
 module.exports = {
-  admin,
   initFirebase,
   getFirestore,
   isFirebaseReady: () => isFirebaseInitialized,

@@ -1,9 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelizePostgres } = require('../../../config/postgres');
 
-/**
- * Modelo: Paciente (Hospital General - PostgreSQL)
- */
 const PacienteHospital = sequelizePostgres.define(
   'PacienteHospital',
   {
@@ -49,9 +46,6 @@ const PacienteHospital = sequelizePostgres.define(
   }
 );
 
-/**
- * Modelo: Medico (Hospital General - PostgreSQL)
- */
 const MedicoHospital = sequelizePostgres.define(
   'MedicoHospital',
   {
@@ -89,9 +83,6 @@ const MedicoHospital = sequelizePostgres.define(
   }
 );
 
-/**
- * Modelo: Consulta (Hospital General - PostgreSQL)
- */
 const ConsultaHospital = sequelizePostgres.define(
   'ConsultaHospital',
   {
@@ -124,7 +115,6 @@ const ConsultaHospital = sequelizePostgres.define(
   }
 );
 
-// Relaciones
 PacienteHospital.hasMany(ConsultaHospital, { foreignKey: 'id_paciente', as: 'consultas' });
 ConsultaHospital.belongsTo(PacienteHospital, { foreignKey: 'id_paciente', as: 'paciente' });
 

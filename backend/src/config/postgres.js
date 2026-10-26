@@ -2,7 +2,6 @@ const { Sequelize } = require('sequelize');
 const { Pool } = require('pg');
 const config = require('./env');
 
-// Instancia de Sequelize para Hospital General
 const sequelizePostgres = new Sequelize(
   config.postgres.database,
   config.postgres.username,
@@ -21,7 +20,6 @@ const sequelizePostgres = new Sequelize(
   }
 );
 
-// Pool nativo de pg para consultas SQL directas cuando sea necesario
 const pgPool = new Pool({
   host: config.postgres.host,
   port: config.postgres.port,
@@ -30,16 +28,13 @@ const pgPool = new Pool({
   password: config.postgres.password,
 });
 
-/**
- * Conectar y verificar conexión a PostgreSQL (Hospital General)
- */
 const connectPostgres = async () => {
   try {
     await sequelizePostgres.authenticate();
-    console.log('✅ [Hospital General] Conectado exitosamente a PostgreSQL');
+    console.log('[Hospital General] Conectado exitosamente a PostgreSQL');
     return true;
   } catch (error) {
-    console.error('❌ [Hospital General] Error conectando a PostgreSQL:', error.message);
+    console.error('[Hospital General] Error conectando a PostgreSQL:', error.message);
     return false;
   }
 };

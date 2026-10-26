@@ -1,0 +1,10 @@
+{
+  "description": "Manage patient medical histories across four institutions with a unified interface, enabling efficient appointment scheduling and record keeping for healthcare professionals.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

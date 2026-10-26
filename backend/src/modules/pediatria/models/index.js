@@ -1,9 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelizeMySQL } = require('../../../config/mysql');
 
-/**
- * Modelo: Tutor (Centro Pediátrico - MySQL)
- */
 const TutorPediatria = sequelizeMySQL.define(
   'TutorPediatria',
   {
@@ -41,9 +38,6 @@ const TutorPediatria = sequelizeMySQL.define(
   }
 );
 
-/**
- * Modelo: Paciente Pediátrico (Centro Pediátrico - MySQL)
- */
 const PacientePediatrico = sequelizeMySQL.define(
   'PacientePediatrico',
   {
@@ -84,9 +78,6 @@ const PacientePediatrico = sequelizeMySQL.define(
   }
 );
 
-/**
- * Modelo: Control de Crecimiento y Desarrollo (Centro Pediátrico - MySQL)
- */
 const ControlCrecimiento = sequelizeMySQL.define(
   'ControlCrecimiento',
   {
@@ -127,7 +118,6 @@ const ControlCrecimiento = sequelizeMySQL.define(
   }
 );
 
-// Relaciones
 PacientePediatrico.belongsTo(TutorPediatria, { foreignKey: 'id_tutor', as: 'tutor' });
 TutorPediatria.hasMany(PacientePediatrico, { foreignKey: 'id_tutor', as: 'pacientes' });
 

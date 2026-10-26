@@ -2,7 +2,6 @@ const { Sequelize } = require('sequelize');
 const mysql = require('mysql2/promise');
 const config = require('./env');
 
-// Instancia de Sequelize para Centro Pediátrico
 const sequelizeMySQL = new Sequelize(
   config.mysql.database,
   config.mysql.username,
@@ -21,7 +20,6 @@ const sequelizeMySQL = new Sequelize(
   }
 );
 
-// Pool nativo de MySQL2 para consultas SQL directas cuando sea necesario
 const mysqlPool = mysql.createPool({
   host: config.mysql.host,
   port: config.mysql.port,
@@ -33,16 +31,13 @@ const mysqlPool = mysql.createPool({
   queueLimit: 0,
 });
 
-/**
- * Conectar y verificar conexión a MySQL (Centro Pediátrico)
- */
 const connectMySQL = async () => {
   try {
     await sequelizeMySQL.authenticate();
-    console.log('✅ [Centro Pediátrico] Conectado exitosamente a MySQL');
+    console.log('[Centro Pediátrico] Conectado exitosamente a MySQL');
     return true;
   } catch (error) {
-    console.error('❌ [Centro Pediátrico] Error conectando a MySQL:', error.message);
+    console.error('[Centro Pediátrico] Error conectando a MySQL:', error.message);
     return false;
   }
 };

@@ -1,9 +1,5 @@
 const { AppError } = require('../utils/helpers');
 
-/**
- * Middleware de Control de Acceso Basado en Roles (RBAC)
- * @param  {...string} allowedRoles - Lista de roles permitidos para acceder a la ruta
- */
 const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {

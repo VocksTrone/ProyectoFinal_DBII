@@ -1,8 +1,5 @@
 const { mongoose } = require('../../../config/mongodb');
 
-/**
- * Esquema: Paciente (Laboratorio Clínico - MongoDB)
- */
 const PacienteLaboratorioSchema = new mongoose.Schema(
   {
     cui: {
@@ -46,40 +43,32 @@ const PacienteLaboratorioSchema = new mongoose.Schema(
   }
 );
 
-/**
- * Subdocumento Embebido: Resultado de Examen
- */
 const ResultadoExamenSchema = new mongoose.Schema({
   parametro: {
     type: String,
-    required: true, // ej: Hemoglobina, Glucosa, Leucocitos
+    required: true,
   },
   valor_obtenido: {
     type: String,
     required: true,
   },
   unidad_medida: {
-    type: String, // ej: mg/dL, g/dL, uL
+    type: String,
     required: true,
   },
   rango_referencia: {
-    type: String, // ej: "70 - 100 mg/dL"
+    type: String,
     required: true,
   },
   alerta: {
     type: Boolean,
-    default: false, // Indica si está fuera de rango
+    default: false,
   },
   observacion: {
     type: String,
   },
 });
 
-/**
- * Esquema: Orden de Examen (Laboratorio Clínico - MongoDB)
- * - Referencia a Paciente
- * - Resultados Embebidos
- */
 const OrdenExamenSchema = new mongoose.Schema(
   {
     codigo_orden: {
@@ -95,7 +84,7 @@ const OrdenExamenSchema = new mongoose.Schema(
     },
     tipo_examen: {
       type: String,
-      required: true, // ej: Hematología Completa, Perfil Lipídico, Glucosa en Ayunas
+      required: true,
     },
     medico_solicitante: {
       type: String,
@@ -103,7 +92,7 @@ const OrdenExamenSchema = new mongoose.Schema(
     },
     institucion_origen: {
       type: String,
-      default: 'Hospital General', // Hospital General, Centro Pediátrico, Clínica Odontológica, Externo
+      default: 'Hospital General',
     },
     estado: {
       type: String,
@@ -117,7 +106,6 @@ const OrdenExamenSchema = new mongoose.Schema(
     fecha_resultados: {
       type: Date,
     },
-    // Patrón Embebido: Resultados de las pruebas de laboratorio
     resultados: [ResultadoExamenSchema],
     notas_laboratorista: {
       type: String,

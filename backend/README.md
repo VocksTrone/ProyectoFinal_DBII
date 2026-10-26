@@ -13,7 +13,7 @@ Este sistema implementa una arquitectura modular donde cada institución de la r
 
 ---
 
-## 📁 Estructura de Directorios
+## Estructura de Directorios
 
 ```
 backend/
@@ -66,7 +66,7 @@ backend/
 
 ---
 
-## 🚀 Instalación y Puesta en Marcha
+## Instalación y Puesta en Marcha
 
 ### 1. Requisitos Previos
 - **Node.js**: v18 o superior (probado en v22)
@@ -98,7 +98,7 @@ npm start
 
 ---
 
-## 🩺 Endpoints Principales
+## Endpoints Principales
 
 ### Comprobación de Estado (Health Check)
 - **`GET /api/health`**: Estado global de la API y de las 4 instituciones.

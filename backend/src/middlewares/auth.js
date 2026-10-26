@@ -2,9 +2,6 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/env');
 const { AppError } = require('../utils/helpers');
 
-/**
- * Middleware para autenticar solicitudes mediante JSON Web Token (JWT)
- */
 const authenticate = (req, res, next) => {
   try {
     let token = null;
@@ -18,7 +15,7 @@ const authenticate = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, config.jwt.secret);
-    req.user = decoded; // { id, username, email, role, institucion, ... }
+    req.user = decoded;
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
@@ -31,9 +28,6 @@ const authenticate = (req, res, next) => {
   }
 };
 
-/**
- * Generar token JWT para pruebas o login
- */
 const generateToken = (payload) => {
   return jwt.sign(payload, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn,
