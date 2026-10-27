@@ -2,6 +2,15 @@ const { Sequelize } = require('sequelize');
 const { Pool } = require('pg');
 const config = require('./env');
 
+const dialectOptions = config.postgres.ssl
+  ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    }
+  : {};
+
 const sequelizePostgres = new Sequelize(
   config.postgres.database,
   config.postgres.username,
@@ -11,6 +20,7 @@ const sequelizePostgres = new Sequelize(
     port: config.postgres.port,
     dialect: 'postgres',
     logging: config.postgres.logging ? console.log : false,
+    dialectOptions,
     pool: {
       max: 10,
       min: 0,
@@ -26,6 +36,7 @@ const pgPool = new Pool({
   database: config.postgres.database,
   user: config.postgres.username,
   password: config.postgres.password,
+  ...(config.postgres.ssl ? { ssl: { rejectUnauthorized: false } } : {}),
 });
 
 const connectPostgres = async () => {

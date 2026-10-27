@@ -19,6 +19,14 @@ const config = {
     username: process.env.PG_USER || 'postgres',
     password: process.env.PG_PASSWORD || 'postgres',
     logging: process.env.PG_LOGGING === 'true',
+    ssl:
+      process.env.PG_SSL === 'REQUIRED' ||
+      process.env.PG_SSL === 'true' ||
+      process.env.PG_SSL === '1' ||
+      (process.env.PG_HOST &&
+        (process.env.PG_HOST.includes('supabase') ||
+          process.env.PG_HOST.includes('pooler') ||
+          process.env.PG_HOST.includes('aivencloud'))),
   },
 
   mysql: {
@@ -44,7 +52,8 @@ const config = {
   },
 
   mongodb: {
-    uri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/laboratorio_clinico_db',
+    uri: process.env.MONGO_URI || '',
+    credentialsPath: process.env.MONGO_CREDENTIALS_PATH || '',
   },
 };
 
