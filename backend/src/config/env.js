@@ -28,6 +28,10 @@ const config = {
     username: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || 'root',
     logging: process.env.MYSQL_LOGGING === 'true',
+    ssl:
+      process.env.MYSQL_SSL === 'REQUIRED' ||
+      process.env.MYSQL_SSL === 'true' ||
+      process.env.MYSQL_SSL === '1',
   },
 
   firebase: {

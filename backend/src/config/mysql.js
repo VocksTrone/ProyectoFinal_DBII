@@ -2,6 +2,15 @@ const { Sequelize } = require('sequelize');
 const mysql = require('mysql2/promise');
 const config = require('./env');
 
+const dialectOptions = config.mysql.ssl
+  ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    }
+  : {};
+
 const sequelizeMySQL = new Sequelize(
   config.mysql.database,
   config.mysql.username,
@@ -11,6 +20,7 @@ const sequelizeMySQL = new Sequelize(
     port: config.mysql.port,
     dialect: 'mysql',
     logging: config.mysql.logging ? console.log : false,
+    dialectOptions,
     pool: {
       max: 10,
       min: 0,
@@ -26,6 +36,7 @@ const mysqlPool = mysql.createPool({
   database: config.mysql.database,
   user: config.mysql.username,
   password: config.mysql.password,
+  ...(config.mysql.ssl ? { ssl: { rejectUnauthorized: false } } : {}),
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
