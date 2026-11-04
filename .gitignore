@@ -1,0 +1,4 @@
+# Credenciales (cada quien tiene su copia local)
+backend/.env
+backend/src/config/firebase-key.json
+credentials/
