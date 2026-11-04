@@ -7,6 +7,8 @@ const config = require('./config/env');
 const { notFoundHandler, errorHandler } = require('./middlewares/error');
 const { sendSuccess } = require('./utils/helpers');
 
+const { authRoutes, pacientesRoutes, catalogosRoutes } = require('./api/comun.routes');
+
 const hospitalRoutes = require('./modules/hospital/routes/hospital.routes');
 const pediatriaRoutes = require('./modules/pediatria/routes/pediatria.routes');
 const odontologiaRoutes = require('./modules/odontologia/routes/odontologia.routes');
@@ -53,6 +55,12 @@ app.get('/api/health', (req, res) => {
   }, 'Servidor de Red Médica en funcionamiento');
 });
 
+// Rutas comunes (el motor depende de la institución del usuario)
+app.use('/api/auth', authRoutes);
+app.use('/api/pacientes', pacientesRoutes);
+app.use('/api/catalogos', catalogosRoutes);
+
+// Rutas propias de cada institución
 app.use('/api/hospital', hospitalRoutes);
 app.use('/api/pediatria', pediatriaRoutes);
 app.use('/api/odontologia', odontologiaRoutes);

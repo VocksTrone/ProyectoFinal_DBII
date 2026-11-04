@@ -151,7 +151,7 @@ Cada motor crea `src/adaptadores/<motor>/` y exporta un objeto con **estas funci
 
 ```js
 module.exports = {
-  buscarUsuario(usuario),                 // { id, nombre, rol, password_hash } o null
+  buscarUsuario(usuario),                 // "rdiaz" (sin @institucion) -> { id, nombre, rol, password_hash } o null
   buscarPacientes(texto),                 // [Paciente]
   crearPaciente(datos),                   // Paciente
   obtenerPaciente(id),                    // Paciente o null
@@ -163,3 +163,7 @@ module.exports = {
 ```
 
 La lógica común (validar, revisar roles, rechazar pacientes archivados) va en `src/core/`. El core nunca importa un motor directamente.
+
+Para activar una institución basta con crear `src/adaptadores/<motor>/index.js` (`postgres`, `mongodb`, `mysql`, `firebase`). Mientras no exista, sus rutas responden 503.
+
+Los usuarios se guardan en cada motor con: `usuario`, `nombre`, `rol` (`medico` o `secretaria`) y `password_hash` (bcrypt, `bcryptjs`).

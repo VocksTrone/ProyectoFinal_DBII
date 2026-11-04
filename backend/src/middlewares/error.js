@@ -10,7 +10,19 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message || 'Error interno del servidor';
   let details = err.details || null;
 
-  if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+  // Código de error del motor (pg, mysql2 o mongo)
+  const codigoMotor = err.parent?.code || err.original?.code || err.code;
+
+  if (err.name === 'SequelizeUniqueConstraintError' || codigoMotor === '23505' || codigoMotor === 11000) {
+    statusCode = 409;
+    message = 'Ya existe un registro con esos datos';
+    details = err.errors ? err.errors.map((e) => ({ field: e.path, message: e.message })) : null;
+  } else if (['23502', '23503', '23514', '22P02', '22007', '22008'].includes(codigoMotor)) {
+    // not null, llave foránea, check, formato o fecha inválida en PostgreSQL
+    statusCode = 400;
+    message = 'Datos rechazados por la base de datos';
+    details = [{ message: err.parent?.detail || err.original?.detail || err.message }];
+  } else if (err.name === 'SequelizeValidationError') {
     statusCode = 400;
     message = 'Error de validación en la base de datos relacional';
     details = err.errors.map((e) => ({ field: e.path, message: e.message }));
@@ -36,7 +48,8 @@ const errorHandler = (err, req, res, next) => {
     ...(config.env === 'development' ? { stack: err.stack } : {}),
   };
 
-  if (statusCode >= 500) {
+  // Solo errores inesperados
+  if (statusCode >= 500 && !err.isOperational) {
     console.error('[Server Error]:', err);
   }
 
