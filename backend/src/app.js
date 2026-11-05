@@ -12,7 +12,6 @@ const { authRoutes, pacientesRoutes, catalogosRoutes } = require('./api/comun.ro
 const hospitalRoutes = require('./modules/hospital/routes/hospital.routes');
 const pediatriaRoutes = require('./modules/pediatria/routes/pediatria.routes');
 const odontologiaRoutes = require('./modules/odontologia/routes/odontologia.routes');
-const laboratorioRoutes = require('./modules/laboratorio/routes/laboratorio.routes');
 
 const app = express();
 
@@ -64,7 +63,6 @@ app.use('/api/catalogos', catalogosRoutes);
 app.use('/api/hospital', hospitalRoutes);
 app.use('/api/pediatria', pediatriaRoutes);
 app.use('/api/odontologia', odontologiaRoutes);
-app.use('/api/laboratorio', laboratorioRoutes);
 
 app.use(notFoundHandler);
 
