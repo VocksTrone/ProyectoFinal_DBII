@@ -42,6 +42,18 @@ create table medico (
     correo varchar(100)
 );
 
+-- Usuarios del sistema (login)
+create table usuario (
+    id_usuario serial primary key,
+    usuario varchar(50) not null unique,
+    nombre varchar(150) not null,
+    rol varchar(20) not null check (rol in ('medico', 'secretaria')),
+    password_hash varchar(100) not null,
+    id_medico int unique references medico(id_medico), -- solo si es médico
+    activo boolean not null default true,
+    check (rol = 'secretaria' or id_medico is not null)
+);
+
 create table paciente (
     id_paciente serial primary key,
     nombres varchar(100) not null,

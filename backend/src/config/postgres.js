@@ -1,6 +1,9 @@
 const { Sequelize } = require('sequelize');
-const { Pool } = require('pg');
+const { Pool, types } = require('pg');
 const config = require('./env');
+
+// Columnas DATE como texto 'YYYY-MM-DD' (evita corrimientos por zona horaria)
+types.setTypeParser(1082, (valor) => valor);
 
 const dialectOptions = config.postgres.ssl
   ? {

@@ -6,9 +6,7 @@ const authorizeRoles = (...allowedRoles) => {
       return next(new AppError('Usuario no autenticado', 401));
     }
 
-    const userRoles = Array.isArray(req.user.roles)
-      ? req.user.roles
-      : [req.user.role || 'guest'];
+    const userRoles = [req.user.rol || 'invitado'];
 
     const hasPermission = userRoles.some(
       (role) => allowedRoles.includes(role) || role === 'admin'

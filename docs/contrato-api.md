@@ -123,6 +123,8 @@ Reglas generales:
 
 Las atenciones van de la más reciente a la más antigua.
 
+El historial puede traer además `extra` con lo propio de la institución (ej. Hospital: `extra.internamientos`).
+
 ## 4. Respuestas y errores
 
 Éxito (ya existe `sendSuccess`):
