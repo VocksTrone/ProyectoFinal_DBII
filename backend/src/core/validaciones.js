@@ -62,7 +62,23 @@ const validarAtencion = (d = {}) => {
   if (errores.length) throw new AppError('Datos de la atención inválidos', 400, errores);
 };
 
+const esHora = (v) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+const esNumero = (v) => /^\d+$/.test(String(v));
+const esObjeto = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+// reglas: [[condición, campo, mensaje], ...]
+const validar = (reglas) => {
+  const errores = reglas.filter(([ok]) => !ok).map(([, field, message]) => ({ field, message }));
+  if (errores.length) throw new AppError('Datos inválidos', 400, errores);
+};
+
 module.exports = {
   validarPaciente,
   validarAtencion,
+  validar,
+  texto,
+  fechaValida,
+  esHora,
+  esNumero,
+  esObjeto,
 };

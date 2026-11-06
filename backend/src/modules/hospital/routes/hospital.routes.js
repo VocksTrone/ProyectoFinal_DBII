@@ -1,13 +1,29 @@
 const { Router } = require('express');
-const hospitalController = require('../controllers/hospital.controller');
+const c = require('../controllers/hospital.controller');
+const { authenticate } = require('../../../middlewares/auth');
+const { authorizeRoles } = require('../../../middlewares/rbac');
+const { soloInstitucion } = require('../../../middlewares/adaptador');
 
 const router = Router();
-router.get('/', hospitalController.getStatus);
+router.use(authenticate, soloInstitucion('hospital'));
 
-router.get('/pacientes', hospitalController.getPacientes);
-router.post('/pacientes', hospitalController.createPaciente);
+const medico = authorizeRoles('medico');
 
-router.get('/consultas', hospitalController.getConsultas);
-router.post('/consultas', hospitalController.createConsulta);
+// Citas
+router.get('/citas', c.listarCitas);
+router.post('/citas', c.agendarCita);
+router.patch('/citas/:id', c.reprogramarCita);
+router.patch('/citas/:id/cancelar', c.cancelarCita);
+
+// Antecedentes
+router.post('/pacientes/:id/antecedentes', medico, c.agregarAntecedente);
+
+// Internamientos
+router.get('/internamientos', c.listarInternamientos);
+router.get('/internamientos/:id', c.obtenerInternamiento);
+router.post('/internamientos', medico, c.internar);
+router.post('/internamientos/:id/medicamentos', medico, c.agregarMedicamento);
+router.post('/internamientos/:id/dietas', medico, c.agregarDieta);
+router.patch('/internamientos/:id/alta', medico, c.darAlta);
 
 module.exports = router;

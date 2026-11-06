@@ -13,4 +13,10 @@ const usarAdaptador = (req, res, next) => {
   next();
 };
 
-module.exports = { usarAdaptador };
+// Rutas propias: solo usuarios de esa institución
+const soloInstitucion = (institucion) => (req, res, next) =>
+  req.user.institucion === institucion
+    ? next()
+    : next(new AppError('Estas rutas pertenecen a otra institución', 403));
+
+module.exports = { usarAdaptador, soloInstitucion };

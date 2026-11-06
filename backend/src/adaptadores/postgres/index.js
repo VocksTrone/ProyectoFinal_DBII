@@ -1,28 +1,7 @@
 // Adaptador del Hospital General (PostgreSQL)
 const { pgPool } = require('../../config/postgres');
 const { AppError } = require('../../utils/helpers');
-
-// Fecha/hora actual en Guatemala (el servidor de Supabase está en UTC)
-const AHORA = "(now() at time zone 'America/Guatemala')";
-
-const vacio = (v) => (v === undefined || v === '' ? null : v);
-const esId = (id) => /^\d+$/.test(String(id));
-
-// Ejecuta fn dentro de una transacción: todo o nada
-const enTransaccion = async (fn) => {
-  const db = await pgPool.connect();
-  try {
-    await db.query('begin');
-    const resultado = await fn(db);
-    await db.query('commit');
-    return resultado;
-  } catch (error) {
-    await db.query('rollback');
-    throw error;
-  } finally {
-    db.release();
-  }
-};
+const { AHORA, vacio, esId, enTransaccion, medicoDeUsuario, bloquearPacienteActivo } = require('./comun');
 
 // Fila de paciente -> formato del contrato
 const aPaciente = (f) => ({
@@ -248,20 +227,10 @@ const archivarPaciente = async (id, motivo) =>
 // Cita -> consulta -> diagnósticos -> tratamientos -> receta, en una sola transacción
 const registrarAtencion = async (idPaciente, d, usuario) => {
   const idConsulta = await enTransaccion(async (db) => {
-    const { rows: u } = await db.query(
-      'select id_medico from hospital_general.usuario where id_usuario = $1',
-      [usuario.id]
-    );
-    if (!u[0]?.id_medico) throw new AppError('El usuario no está vinculado a un médico', 403);
-    const idMedico = u[0].id_medico;
+    const idMedico = await medicoDeUsuario(db, usuario);
 
     // Bloquea al paciente para que no lo archiven a medio registro
-    const { rows: p } = await db.query(
-      'select estado from hospital_general.paciente where id_paciente = $1 for update',
-      [idPaciente]
-    );
-    if (!p[0]) throw new AppError('Paciente no encontrado', 404);
-    if (p[0].estado !== 'activo') throw new AppError('El paciente está archivado', 409);
+    await bloquearPacienteActivo(db, idPaciente);
 
     // Usa la cita indicada o crea una al momento
     let idCita = d.extra?.id_cita;
