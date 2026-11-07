@@ -1,0 +1,64 @@
+/* Estilos agregados para las pantallas conectadas al API */
+
+.loading-state { display:flex; align-items:center; justify-content:center; gap:10px; padding:48px 20px; color:#7d8992; font-size:12px; }
+.spinner { width:18px; height:18px; border-radius:50%; border:2px solid #d5e6e4; border-top-color:#087b78; animation:girar .8s linear infinite; }
+@keyframes girar { to { transform:rotate(360deg); } }
+
+.error-box { display:flex; align-items:center; gap:12px; background:#fdf3f3; border:1px solid #f1d3d3; color:#9b3b3b; border-radius:10px; padding:14px 16px; }
+.error-box > div { flex:1; }
+.error-box strong { display:block; font-size:12px; }
+.error-box span { display:block; font-size:11px; margin-top:3px; color:#a35a5a; }
+.card-pad { padding:20px; }
+
+.toast-error > span { background:#fbe5e5 !important; color:#b54646 !important; }
+
+.field-error input, .field-error select, .field-error textarea { border-color:#d58a8a !important; background:#fffafa; }
+.field-message { color:#b54646; font-size:9px; margin-top:4px; }
+
+.login-error { display:flex; align-items:center; gap:8px; background:#fdf3f3; color:#a33f3f; border:1px solid #f1d3d3; border-radius:8px; padding:10px 12px; font-size:11px; margin-bottom:14px; }
+
+.row-arrow { color:#a5adb4; display:grid; place-items:center; }
+.tabs button { display:inline-flex; align-items:center; gap:6px; }
+.tabs button svg { opacity:.5; }
+
+/* Diagnósticos */
+.chip-row { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 6px; }
+.dx-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border-radius:20px; font-size:9px; font-weight:700; background:#fff5e6; color:#9a6c28; }
+.dx-chip.definitivo { background:#e8f4ef; color:#278063; }
+.dx-chip b { font-size:8px; background:#ffffffaa; padding:1px 5px; border-radius:8px; }
+.plain-table td:first-child { display:table-cell; }
+.plain-table td:first-child span { font-size:8px; color:#929aa0; display:block; margin-top:3px; }
+.plain-table td { vertical-align:top; }
+.plain-table tbody tr { cursor:default; }
+.cell-line + .cell-line { margin-top:4px; }
+.summary-grid .med-line { display:block; background:none !important; padding:0 !important; margin-bottom:6px; }
+.summary-grid .med-line b { display:block; font-size:10px; }
+.summary-grid .med-line em { display:block; font-size:9px; }
+.summary-grid p > em { color:#99a1a7; font-size:10px; }
+
+/* Recetas */
+.recipe-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:16px; }
+.recipe-card .med-icon { width:34px; height:34px; border-radius:9px; display:grid; place-items:center; background:#e8f4f2; color:#087b78; font-weight:700; font-size:12px; }
+.recipe-items { padding:0 20px 18px; display:flex; flex-direction:column; gap:10px; }
+.recipe-items > div { border:1px solid #edf1f2; border-radius:9px; padding:11px 13px; }
+.recipe-items strong { font-size:11px; }
+.recipe-items span { font-size:9px; color:#8a959e; margin-left:6px; }
+.recipe-items p { margin:5px 0 0; font-size:10px; color:#45525c; }
+.recipe-items small { display:block; margin-top:4px; font-size:9px; color:#7d8992; font-style:italic; }
+
+/* Antecedentes */
+.inline-form { display:grid; grid-template-columns:200px 1fr auto; gap:12px; align-items:end; padding:0 20px 16px; border-bottom:1px solid #edf1f2; }
+.antecedent-list { padding:8px 20px 18px; }
+.antecedent-list > div { display:grid; grid-template-columns:150px 1fr auto; gap:12px; align-items:center; padding:11px 0; border-bottom:1px solid #f0f3f4; font-size:11px; }
+.antecedent-list > div:last-child { border-bottom:0; }
+.antecedent-type { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#5d6b76; }
+.antecedent-list .is-allergy .antecedent-type { color:#b54646; }
+.antecedent-list small { color:#929aa0; font-size:9px; }
+
+.lab-status.cancelada { color:#747c83; background:#edf0f2; }
+.lab-status.cancelada i { background:#9aa3a9; }
+
+@media (max-width:740px) {
+  .inline-form { grid-template-columns:1fr; }
+  .antecedent-list > div { grid-template-columns:1fr; gap:3px; }
+}
