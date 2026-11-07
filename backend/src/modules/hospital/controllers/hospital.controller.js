@@ -67,6 +67,8 @@ class HospitalController {
   obtenerInternamiento = asyncHandler(async (req, res) => {
     const data = await hospital.obtenerInternamiento(req.params.id);
     if (!data) throw new AppError('Internamiento no encontrado', 404);
+    // Prescripciones = información restringida (solo médicos)
+    if (req.user.rol !== 'medico') data.medicamentos = null;
     return sendSuccess(res, data, 'Internamiento obtenido');
   });
 

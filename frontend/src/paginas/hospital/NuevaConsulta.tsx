@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { api } from "../../api/cliente";
-import type { Atencion, Diagnostico, ItemCatalogo, MedicamentoRecetado, Paciente } from "../../api/tipos";
+import type { Atencion, Cita, Diagnostico, ItemCatalogo, MedicamentoRecetado, Paciente } from "../../api/tipos";
 import { useNav } from "../../navegacion";
 import { Button, Cargando, EmptyState, ErrorCaja, Field, Icon, PageTitle, fechaCorta, hoyISO, useAviso, useCarga } from "../../ui/componentes";
-
-type Cita = { id: string; fecha: string; hora: string; estado: string; medico: string };
 
 const PASOS = ["Motivo y notas", "Diagnósticos", "Tratamientos", "Receta"];
 const VIAS = ["oral", "intravenosa", "intramuscular", "subcutánea", "tópica", "inhalada", "sublingual"];
@@ -12,13 +10,13 @@ const VIAS = ["oral", "intravenosa", "intramuscular", "subcutánea", "tópica", 
 const nuevoDiagnostico = (): Diagnostico => ({ nombre: "", codigo: "", tipo: "presuntivo", descripcion: "", tratamientos: [] });
 const nuevoMedicamento = (): MedicamentoRecetado => ({ id_medicamento: "", dosis: "", frecuencia: "", via: "oral", duracion_dias: null, indicaciones: "" });
 
-export default function NuevaConsulta({ idPaciente }: { idPaciente: string }) {
+export default function NuevaConsulta({ idPaciente, idCitaInicial }: { idPaciente: string; idCitaInicial?: string }) {
   const { ir } = useNav();
   const aviso = useAviso();
   const [paso, setPaso] = useState(1);
   const [motivo, setMotivo] = useState("");
   const [notas, setNotas] = useState("");
-  const [idCita, setIdCita] = useState("");
+  const [idCita, setIdCita] = useState(idCitaInicial ?? "");
   const [diagnosticos, setDiagnosticos] = useState<Diagnostico[]>([nuevoDiagnostico()]);
   const [conReceta, setConReceta] = useState(false);
   const [medicamentos, setMedicamentos] = useState<MedicamentoRecetado[]>([nuevoMedicamento()]);

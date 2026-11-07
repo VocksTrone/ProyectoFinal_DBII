@@ -124,6 +124,25 @@
 .pending-note { font-size:10px; color:#9a6c28; font-weight:500; }
 .report-note { font-size:10px; color:#5d6b76; font-style:italic; margin:8px 0 0; }
 
+/* Agenda */
+.date-nav .date-picker { height:31px; border:1px solid #dde4e7; border-radius:7px; padding:0 8px; font-size:10px; color:#4a5863; }
+.doctor-filter { height:34px; border:1px solid #dde4e7; border-radius:7px; padding:0 10px; font-size:10px; color:#4a5863; background:#fff; }
+.slot-events { display:flex; flex-wrap:wrap; gap:6px; padding:4px 5px; }
+.slot-events .calendar-event { position:relative; top:auto; left:auto; width:auto; flex:1 1 240px; max-width:360px; text-align:left; }
+.calendar-event.cita-atendida { background:#eef3f9; border-color:#477ea7; color:#314f68; }
+.calendar-event.cita-cancelada { background:#f2f4f5; border-color:#a3acb2; color:#7d8992; text-decoration:line-through; }
+.status.cita-estado-atendida { background:#e1edf8; color:#28648f; }
+.status.cita-estado-cancelada { background:#edf0f2; color:#747c83; }
+.detail-list { display:flex; flex-direction:column; gap:12px; margin:0; }
+.detail-list > div { display:grid; grid-template-columns:90px 1fr; font-size:11px; }
+.detail-list dt { color:#8a959e; font-weight:600; }
+.detail-list dd { margin:0; color:#1b2731; }
+
+/* Inicio */
+.activity-item.as-button { width:100%; border:0; background:none; text-align:left; color:inherit; }
+.activity-item.as-button:hover { background:#f8fbfb; }
+.appointment-time span { display:block; white-space:nowrap; }
+
 @media (max-width:740px) {
   .inline-form { grid-template-columns:1fr; }
   .antecedent-list > div { grid-template-columns:1fr; gap:3px; }

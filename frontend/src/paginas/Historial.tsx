@@ -4,6 +4,7 @@ import type { Atencion, Historial as HistorialT, Paciente } from "../api/tipos";
 import { INSTITUCIONES, PESTANAS_RESTRINGIDAS } from "../instituciones";
 import { useNav } from "../navegacion";
 import { useUsuario } from "../sesion";
+import { InternarModal } from "./hospital/Internamientos";
 import { ESTADO_ORDEN } from "./laboratorio/util";
 import {
   Avatar, Button, Cargando, EmptyState, ErrorCaja, Field, Icon, Modal, Restricted,
@@ -17,6 +18,7 @@ export default function Historial({ id }: Props) {
   const { ir } = useNav();
   const [pestana, setPestana] = useState("Resumen");
   const [archivar, setArchivar] = useState(false);
+  const [internar, setInternar] = useState(false);
   const esMedico = usuario.rol === "medico";
   const inst = INSTITUCIONES[usuario.institucion];
   const esLab = usuario.institucion === "laboratorio";
@@ -55,6 +57,7 @@ export default function Historial({ id }: Props) {
       </div>}
       <div className="patient-actions">{!archivado && <>
         <Button variant="secondary" icon="archive" onClick={() => setArchivar(true)}>Archivar historial</Button>
+        {usuario.institucion === "hospital" && esMedico && !internamientoActivo && <Button variant="secondary" icon="heart" onClick={() => setInternar(true)}>Internar paciente</Button>}
         {puedeAtender && <Button icon="plus" onClick={() => ir("atencion", paciente.id)}>{esLab ? "Nueva orden de examen" : "Nueva consulta"}</Button>}
       </>}</div>
     </section>
@@ -75,6 +78,7 @@ export default function Historial({ id }: Props) {
         : null}
     </div>
 
+    {internar && <InternarModal paciente={paciente} cerrar={() => setInternar(false)} listo={(i) => ir("internamiento", i.id)} />}
     {archivar && <ArchivarModal paciente={paciente} cerrar={() => setArchivar(false)} listo={() => { setArchivar(false); recargar(); }} />}
   </div>;
 }

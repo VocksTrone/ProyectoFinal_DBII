@@ -105,3 +105,30 @@ export type ExamenCatalogo = {
 };
 
 export type ItemCatalogo = { id: string; nombre: string; [campo: string]: any };
+
+// Hospital
+export type Cita = {
+  id: string;
+  id_paciente: string;
+  paciente: string;
+  id_medico: string;
+  medico: string;
+  especialidad: string;
+  fecha: string;
+  hora: string;
+  estado: "programada" | "atendida" | "cancelada";
+};
+
+export type Internamiento = {
+  id: string;
+  id_paciente: string;
+  paciente: string;
+  id_medico: string;
+  medico: string;
+  fecha_ingreso: string;
+  fecha_egreso: string | null;
+  motivo: string;
+  estado: "activo" | "dado de alta";
+  medicamentos?: { id: string; id_medicamento: string; nombre: string; presentacion: string; dosis: string; fecha_inicio: string; fecha_fin: string | null }[] | null;
+  dietas?: { id: string; id_tipo_dieta: string; nombre: string; fecha_inicio: string; fecha_fin: string | null; observaciones: string | null }[];
+};
