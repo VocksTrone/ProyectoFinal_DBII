@@ -2,6 +2,11 @@ import "./extra.css";
 import { INSTITUCIONES } from "./instituciones";
 import { NavegacionProvider, useNav } from "./navegacion";
 import Historial from "./paginas/Historial";
+import NuevaConsulta from "./paginas/hospital/NuevaConsulta";
+import NuevaOrden from "./paginas/laboratorio/NuevaOrden";
+import OrdenesDia from "./paginas/laboratorio/OrdenesDia";
+import Reporte from "./paginas/laboratorio/Reporte";
+import Resultados from "./paginas/laboratorio/Resultados";
 import Login from "./paginas/Login";
 import Marco from "./paginas/Marco";
 import Pacientes from "./paginas/Pacientes";
@@ -29,19 +34,22 @@ function Pendiente({ titulo }: { titulo: string }) {
 }
 
 function Paginas() {
+  const usuario = useUsuario();
   const { actual } = useNav();
   const { pagina, id } = actual;
+  const esLab = usuario.institucion === "laboratorio";
   switch (pagina) {
     case "pacientes": return <Pacientes />;
     case "registro": return <RegistroPaciente />;
     case "historial": return <Historial id={id!} key={id} />;
-    case "atencion": return <Pendiente titulo="Nueva atención" />;
+    // Misma acción, distinta pantalla según la institución
+    case "atencion": return esLab ? <NuevaOrden idPaciente={id} key={id} /> : <NuevaConsulta idPaciente={id!} key={id} />;
+    case "ordenes": return <OrdenesDia />;
+    case "resultados": return <Resultados idOrden={id!} key={id} />;
+    case "reporte": return <Reporte idOrden={id!} key={id} />;
     case "agenda": return <Pendiente titulo="Agenda" />;
     case "internamientos":
     case "internamiento": return <Pendiente titulo="Internamientos" />;
-    case "ordenes":
-    case "resultados":
-    case "reporte": return <Pendiente titulo="Laboratorio" />;
     default: return <Inicio />;
   }
 }

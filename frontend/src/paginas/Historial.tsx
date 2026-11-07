@@ -4,6 +4,7 @@ import type { Atencion, Historial as HistorialT, Paciente } from "../api/tipos";
 import { INSTITUCIONES, PESTANAS_RESTRINGIDAS } from "../instituciones";
 import { useNav } from "../navegacion";
 import { useUsuario } from "../sesion";
+import { ESTADO_ORDEN } from "./laboratorio/util";
 import {
   Avatar, Button, Cargando, EmptyState, ErrorCaja, Field, Icon, Modal, Restricted,
   edad, fechaCorta, formatoDpi, formatoTelefono, horaDe, sexoTexto, useAviso, useCarga,
@@ -222,13 +223,6 @@ function InternamientosPaciente({ historial }: { historial: HistorialT | null })
 }
 
 // ---------- Laboratorio: órdenes del paciente ----------
-
-export const ESTADO_ORDEN: Record<string, { clase: string; texto: string }> = {
-  pendiente: { clase: "recibida", texto: "Pendiente" },
-  en_proceso: { clase: "en-proceso", texto: "En proceso" },
-  completada: { clase: "validada", texto: "Completada" },
-  cancelada: { clase: "cancelada", texto: "Cancelada" },
-};
 
 function OrdenesPaciente({ atenciones, puedeCrear, nuevaOrden }: { atenciones: Atencion[]; puedeCrear: boolean; nuevaOrden: () => void }) {
   const { ir } = useNav();

@@ -1,5 +1,7 @@
 const laboratorio = require('../../../adaptadores/mongodb/laboratorio');
-const { validar, esObjeto } = require('../../../core/validaciones');
+const adaptadorMongo = require('../../../adaptadores/mongodb');
+const pacientesService = require('../../../core/pacientes.service');
+const { validar, esObjeto, texto } = require('../../../core/validaciones');
 const { asyncHandler, sendSuccess, AppError } = require('../../../utils/helpers');
 
 const ESTADOS = ['pendiente', 'en_proceso', 'completada', 'cancelada'];
@@ -21,6 +23,23 @@ class LaboratorioController {
     const ordenes = await laboratorio.listarOrdenes({ estado });
     const data = req.user.rol === 'medico' ? ordenes : ordenes.map(sinValores);
     return sendSuccess(res, data, 'Órdenes obtenidas');
+  });
+
+  // Recepción: la secretaria también crea órdenes (usa la misma regla común)
+  crearOrden = asyncHandler(async (req, res) => {
+    const b = req.body;
+    validar([
+      [texto(b.id_paciente), 'id_paciente', 'Es obligatorio'],
+      [Array.isArray(b.examenes) && b.examenes.length > 0, 'examenes', 'Seleccione al menos un examen'],
+      [texto(b.medico_solicitante), 'medico_solicitante', 'Es obligatorio'],
+    ]);
+    const datos = {
+      motivo: b.motivo,
+      notas: b.notas,
+      extra: { examenes: b.examenes, medico_solicitante: b.medico_solicitante, institucion_origen: b.institucion_origen },
+    };
+    const data = await pacientesService.registrarAtencion(adaptadorMongo, b.id_paciente, datos, req.user);
+    return sendSuccess(res, data, 'Orden de examen creada', 201);
   });
 
   obtenerOrden = asyncHandler(async (req, res) => {
