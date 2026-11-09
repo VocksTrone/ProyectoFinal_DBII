@@ -12,6 +12,8 @@ const USUARIOS_PRUEBA = [
   { usuario: "lmendez@hospital", password: "Hospital2026!" },
   { usuario: "gchoc@pediatria", password: "Pediatria2026!" },
   { usuario: "sperez@pediatria", password: "Pediatria2026!" },
+  { usuario: "cgarcia@odontologia", password: "Odontologia2026!" },
+  { usuario: "mramirez@odontologia", password: "Odontologia2026!" },
   { usuario: "acastillo@laboratorio", password: "Laboratorio2026!" },
   { usuario: "pramirez@laboratorio", password: "Laboratorio2026!" },
 ];

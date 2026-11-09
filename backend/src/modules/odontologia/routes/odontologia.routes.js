@@ -1,17 +1,25 @@
 const { Router } = require('express');
 const odontologiaController = require('../controllers/odontologia.controller');
+const { authenticate } = require('../../../middlewares/auth');
+const { authorizeRoles } = require('../../../middlewares/rbac');
+const { soloInstitucion } = require('../../../middlewares/adaptador');
 
 const router = Router();
 
-// Estado e información del módulo
+// Estado e información del módulo (público / health)
 router.get('/', odontologiaController.getStatus);
+
+// Todas las operaciones de datos requieren autenticación y pertenecer a 'odontologia'
+router.use(authenticate, soloInstitucion('odontologia'));
+
+const medico = authorizeRoles('medico');
 
 // 1. Pacientes
 router.get('/pacientes', odontologiaController.getPacientes);
 router.post('/pacientes', odontologiaController.createPaciente);
 router.get('/pacientes/:id', odontologiaController.getPacienteById);
 router.put('/pacientes/:id', odontologiaController.updatePaciente);
-router.post('/pacientes/:id/historial', odontologiaController.addHistorialPaciente);
+router.post('/pacientes/:id/historial', medico, odontologiaController.addHistorialPaciente);
 
 // 2. Odontólogos
 router.get('/odontologos', odontologiaController.getOdontologos);

@@ -6,6 +6,26 @@
 -- Desactivar temporalmente revisión de llaves foráneas para recreación segura
 SET FOREIGN_KEY_CHECKS = 0;
 
+-- Eliminar tablas viejas en inglés si existen en la base
+DROP TABLE IF EXISTS antecedent;
+DROP TABLE IF EXISTS attendent;
+DROP TABLE IF EXISTS diagnosis;
+DROP TABLE IF EXISTS doctor;
+DROP TABLE IF EXISTS growth_monitoring;
+DROP TABLE IF EXISTS invoice_detail;
+DROP TABLE IF EXISTS invoice;
+DROP TABLE IF EXISTS medical_consultation;
+DROP TABLE IF EXISTS patient;
+DROP TABLE IF EXISTS payment_detail;
+DROP TABLE IF EXISTS payment;
+DROP TABLE IF EXISTS recipe_detail;
+DROP TABLE IF EXISTS recipe;
+DROP TABLE IF EXISTS prescription;
+DROP TABLE IF EXISTS treatment;
+DROP TABLE IF EXISTS vaccination_record;
+DROP TABLE IF EXISTS vaccination;
+
+-- Eliminar tablas en español si ya existían
 DROP TABLE IF EXISTS detallepago;
 DROP TABLE IF EXISTS pago;
 DROP TABLE IF EXISTS detallefactura;

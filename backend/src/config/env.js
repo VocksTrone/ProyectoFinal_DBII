@@ -32,7 +32,7 @@ const config = {
   mysql: {
     host: process.env.MYSQL_HOST || 'localhost',
     port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
-    database: process.env.MYSQL_DATABASE || 'centro_pediatrico_db',
+    database: process.env.MYSQL_DATABASE || 'center',
     username: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || 'root',
     logging: process.env.MYSQL_LOGGING === 'true',
