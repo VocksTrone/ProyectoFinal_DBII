@@ -11,7 +11,9 @@ export type Pagina =
   | "internamiento"
   | "ordenes"
   | "resultados"
-  | "reporte";
+  | "reporte"
+  | "tutores"
+  | "vacunacion";
 
 type Ubicacion = { pagina: Pagina; id?: string; extra?: string };
 

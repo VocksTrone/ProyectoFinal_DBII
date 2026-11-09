@@ -6,10 +6,12 @@ import { useSesion } from "../sesion";
 import { Button, Field, Icon } from "../ui/componentes";
 import { Logo } from "./Marco";
 
-// Usuarios de los datos de prueba (database/postgres y database/mongodb)
+// Usuarios de los datos de prueba (database/postgres, database/mongodb y database/mysql)
 const USUARIOS_PRUEBA = [
   { usuario: "rdiaz@hospital", password: "Hospital2026!" },
   { usuario: "lmendez@hospital", password: "Hospital2026!" },
+  { usuario: "gchoc@pediatria", password: "Pediatria2026!" },
+  { usuario: "sperez@pediatria", password: "Pediatria2026!" },
   { usuario: "acastillo@laboratorio", password: "Laboratorio2026!" },
   { usuario: "pramirez@laboratorio", password: "Laboratorio2026!" },
 ];

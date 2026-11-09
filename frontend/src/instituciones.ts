@@ -36,8 +36,11 @@ export const INSTITUCIONES: Record<Institucion, Config> = {
     nombre: "Centro Médico Pediátrico",
     motor: "MySQL",
     atencion: "consulta",
-    pestanas: ["Resumen", "Consultas", "Diagnósticos y tratamientos", "Recetas", "Antecedentes"],
-    menu: [],
+    pestanas: ["Resumen", "Consultas", "Diagnósticos y tratamientos", "Recetas", "Antecedentes", "Crecimiento", "Vacunas"],
+    menu: [
+      { pagina: "tutores", etiqueta: "Tutores y Padres", icono: "users" },
+      { pagina: "vacunacion", etiqueta: "Esquema Vacunas", icono: "shield" },
+    ],
     catalogoAtencion: "medicamentos",
   },
   odontologia: {
@@ -51,7 +54,15 @@ export const INSTITUCIONES: Record<Institucion, Config> = {
 };
 
 // Pestañas con información restringida (solo personal médico)
-export const PESTANAS_RESTRINGIDAS = ["Consultas", "Diagnósticos y tratamientos", "Recetas", "Antecedentes", "Órdenes y resultados"];
+export const PESTANAS_RESTRINGIDAS = [
+  "Consultas",
+  "Diagnósticos y tratamientos",
+  "Recetas",
+  "Antecedentes",
+  "Órdenes y resultados",
+  "Crecimiento",
+  "Vacunas",
+];
 
 export const nombreRol = (rol: Rol, institucion: Institucion) => {
   if (rol === "secretaria") return "Secretaria";

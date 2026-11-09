@@ -37,7 +37,7 @@ export default function Pacientes() {
       {cargando ? <Cargando texto="Buscando pacientes..." /> : error ? <div className="card-pad"><ErrorCaja error={error} reintentar={recargar} /></div> : visibles.length === 0 ? <EmptyState title={busqueda ? "Sin resultados" : "Aún no hay pacientes"} description={busqueda ? `No hay pacientes que coincidan con "${busqueda}".` : "Registra el primer expediente de tu institución."} action={<Button icon="plus" onClick={() => ir("registro")}>Registrar paciente</Button>} /> :
         <div className="table-scroll"><table><thead><tr><th>PACIENTE</th><th>DPI</th><th>EDAD</th><th>TELÉFONO</th><th>ESTADO</th><th /></tr></thead><tbody>
           {visibles.map((p) => <tr key={p.id} onClick={() => ir("historial", p.id)}>
-            <td><Avatar nombre={`${p.nombres} ${p.apellidos}`} /><div><strong>{p.nombres} {p.apellidos}</strong><span>Registrado: {fechaCorta(p.extra?.fecha_registro)}</span></div></td>
+            <td><Avatar nombre={`${p.nombres} ${p.apellidos}`} /><div><strong>{p.nombres} {p.apellidos}</strong><span>{p.extra?.encargado ? `Tutor: ${p.extra.encargado.nombres} ${p.extra.encargado.apellidos} (${p.extra.encargado.parentesco}) · ` : ""}Registrado: {fechaCorta(p.extra?.fecha_registro)}</span></div></td>
             <td>{formatoDpi(p.dpi)}</td>
             <td>{edad(p.fecha_nacimiento)}</td>
             <td>{formatoTelefono(p.telefono)}</td>

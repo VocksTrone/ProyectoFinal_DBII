@@ -6,6 +6,7 @@ import { useNav } from "../navegacion";
 import { useUsuario } from "../sesion";
 import { InternarModal } from "./hospital/Internamientos";
 import { ESTADO_ORDEN } from "./laboratorio/util";
+import { CrecimientoPaciente, NuevoControlModal, VacunasPaciente, NuevaVacunaModal } from "./pediatria/ControlesVacunas";
 import {
   Avatar, Button, Cargando, EmptyState, ErrorCaja, Field, Icon, Modal, Restricted,
   edad, fechaCorta, formatoDpi, formatoTelefono, horaDe, sexoTexto, useAviso, useCarga,
@@ -19,9 +20,12 @@ export default function Historial({ id }: Props) {
   const [pestana, setPestana] = useState("Resumen");
   const [archivar, setArchivar] = useState(false);
   const [internar, setInternar] = useState(false);
+  const [nuevoControl, setNuevoControl] = useState(false);
+  const [nuevaVacuna, setNuevaVacuna] = useState(false);
   const esMedico = usuario.rol === "medico";
   const inst = INSTITUCIONES[usuario.institucion];
   const esLab = usuario.institucion === "laboratorio";
+  const esPediatria = usuario.institucion === "pediatria";
 
   // La ficha la ven todos; el historial clínico solo el personal médico
   const { datos, error, cargando, recargar } = useCarga(async () => {
@@ -49,7 +53,7 @@ export default function Historial({ id }: Props) {
       <div className="patient-main"><Avatar nombre={nombre} className="patient-avatar" /><div>
         <div className="name-line"><h1>{nombre}</h1>{archivado && <span className="archived-label">Archivado</span>}{internamientoActivo && !archivado && <span className="hospitalized-label"><Icon name="heart" size={12} />Internado</span>}</div>
         <p>{formatoDpi(paciente.dpi)} <i /> {edad(paciente.fecha_nacimiento)} <i /> {sexoTexto(paciente.sexo)}</p>
-        <span>Expediente {esLab ? "LAB" : "HG"}-{paciente.id.slice(-6).toUpperCase().padStart(6, "0")} · Registrado el {fechaCorta(paciente.extra?.fecha_registro)}</span>
+        <span>Expediente {esLab ? "LAB" : esPediatria ? "PED" : "HG"}-{paciente.id.slice(-6).toUpperCase().padStart(6, "0")} · Registrado el {fechaCorta(paciente.extra?.fecha_registro)}</span>
       </div></div>
       {!esLab && <div className="patient-alerts">
         {alergias.length > 0 && <div className="alert allergy"><Icon name="activity" /><span><small>ALERGIA</small><strong>{alergias[0].descripcion || alergias[0].tipo}</strong></span></div>}
@@ -75,18 +79,27 @@ export default function Historial({ id }: Props) {
         : pestana === "Antecedentes" ? <Antecedentes paciente={paciente} historial={historial!} recargar={recargar} />
         : pestana === "Internamientos" ? <InternamientosPaciente historial={historial} />
         : pestana === "Órdenes y resultados" ? <OrdenesPaciente atenciones={historial!.atenciones} puedeCrear={!archivado} nuevaOrden={() => ir("atencion", paciente.id)} />
+        : pestana === "Crecimiento" ? <CrecimientoPaciente paciente={paciente} historial={historial} recargar={recargar} puedeRegistrar={!archivado && esMedico} nuevoControl={() => setNuevoControl(true)} />
+        : pestana === "Vacunas" ? <VacunasPaciente paciente={paciente} historial={historial} recargar={recargar} puedeRegistrar={!archivado && esMedico} nuevaVacuna={() => setNuevaVacuna(true)} />
         : null}
     </div>
 
     {internar && <InternarModal paciente={paciente} cerrar={() => setInternar(false)} listo={(i) => ir("internamiento", i.id)} />}
     {archivar && <ArchivarModal paciente={paciente} cerrar={() => setArchivar(false)} listo={() => { setArchivar(false); recargar(); }} />}
+    {nuevoControl && <NuevoControlModal paciente={paciente} cerrar={() => setNuevoControl(false)} listo={() => { setNuevoControl(false); recargar(); }} />}
+    {nuevaVacuna && <NuevaVacunaModal paciente={paciente} cerrar={() => setNuevaVacuna(false)} listo={() => { setNuevaVacuna(false); recargar(); }} />}
   </div>;
 }
 
 // ---------- Resumen ----------
 
 function TarjetaContacto({ paciente }: { paciente: Paciente }) {
+  const enc = paciente.extra?.encargado;
   return <section className="card contact-card"><div className="card-header"><h2>Datos de contacto</h2></div><dl>
+    {enc && <>
+      <dt>Tutor / Encargado</dt><dd><b>{enc.nombres} {enc.apellidos}</b> ({enc.parentesco})</dd>
+      <dt>Contacto tutor</dt><dd>{formatoTelefono(enc.telefono)}{enc.correo ? ` · ${enc.correo}` : ""}</dd>
+    </>}
     <dt>Teléfono</dt><dd><b>{formatoTelefono(paciente.telefono)}</b></dd>
     <dt>Correo electrónico</dt><dd>{paciente.correo || "—"}</dd>
     <dt>Dirección</dt><dd>{paciente.direccion || "—"}</dd>

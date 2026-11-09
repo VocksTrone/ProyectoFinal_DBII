@@ -34,6 +34,11 @@ export default function RegistroPaciente() {
   const [enviando, setEnviando] = useState(false);
   const esHospital = usuario.institucion === "hospital";
   const esLab = usuario.institucion === "laboratorio";
+  const esPediatria = usuario.institucion === "pediatria";
+  const [tutorNombre, setTutorNombre] = useState("");
+  const [tutorApellido, setTutorApellido] = useState("");
+  const [tutorParentesco, setTutorParentesco] = useState("Madre");
+  const [tutorTelefono, setTutorTelefono] = useState("");
 
   const campo = (nombre: keyof Formulario) => ({
     value: f[nombre],
@@ -56,7 +61,17 @@ export default function RegistroPaciente() {
     setEnviando(true);
     try {
       const { tipo_sangre, ...datos } = f;
-      const paciente = await api.post<Paciente>("/pacientes", { ...datos, extra: esHospital && tipo_sangre ? { tipo_sangre } : {} });
+      const extra: Record<string, any> = {};
+      if (tipo_sangre) extra.tipo_sangre = tipo_sangre;
+      if (esPediatria && (tutorNombre.trim() || tutorApellido.trim())) {
+        extra.encargado = {
+          nombres: tutorNombre.trim() || "Encargado",
+          apellidos: tutorApellido.trim() || "Principal",
+          parentesco: tutorParentesco,
+          telefono: tutorTelefono.trim() || f.telefono || "55555555",
+        };
+      }
+      const paciente = await api.post<Paciente>("/pacientes", { ...datos, extra });
       aviso.ok(`${paciente.nombres} ${paciente.apellidos} fue registrado en ${INSTITUCIONES[usuario.institucion].nombre}.`);
       ir("historial", paciente.id);
     } catch (err) {
@@ -85,6 +100,43 @@ export default function RegistroPaciente() {
         <Field label={esLab ? "Correo para resultados" : "Correo electrónico"} error={errores.correo}><input type="email" {...campo("correo")} placeholder="paciente@correo.com" /></Field>
         <Field label="Dirección" full><input {...campo("direccion")} placeholder="Zona, municipio y departamento" maxLength={200} /></Field>
       </div></div>
+      {esPediatria && (
+        <div className="form-section">
+          <div className="section-title">
+            <span>03</span>
+            <div>
+              <h2>Padre, madre o tutor legal</h2>
+              <p>Vinculación requerida para el menor de edad</p>
+            </div>
+          </div>
+          <div className="form-grid">
+            <Field label="Nombres del tutor">
+              <input value={tutorNombre} onChange={(e) => setTutorNombre(e.target.value)} placeholder="Ej. Carlos Eduardo" />
+            </Field>
+            <Field label="Apellidos del tutor">
+              <input value={tutorApellido} onChange={(e) => setTutorApellido(e.target.value)} placeholder="Ej. Morales Rivera" />
+            </Field>
+            <Field label="Parentesco">
+              <select value={tutorParentesco} onChange={(e) => setTutorParentesco(e.target.value)}>
+                <option value="Madre">Madre</option>
+                <option value="Padre">Padre</option>
+                <option value="Tutor legal">Tutor legal</option>
+                <option value="Abuelo/a">Abuelo / Abuela</option>
+                <option value="Tío/a">Tío / Tía</option>
+              </select>
+            </Field>
+            <Field label="Teléfono del tutor">
+              <input
+                value={tutorTelefono}
+                maxLength={8}
+                inputMode="numeric"
+                onChange={(e) => setTutorTelefono(e.target.value.replace(/\D/g, ""))}
+                placeholder="8 dígitos"
+              />
+            </Field>
+          </div>
+        </div>
+      )}
       <div className="form-actions"><Button variant="secondary" onClick={() => ir("pacientes")}>Cancelar</Button><Button type="submit" icon="check" disabled={enviando}>{enviando ? "Guardando..." : "Registrar paciente"}</Button></div>
     </form>
   </div>;

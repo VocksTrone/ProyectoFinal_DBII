@@ -14,6 +14,8 @@ import Login from "./paginas/Login";
 import Marco from "./paginas/Marco";
 import Pacientes from "./paginas/Pacientes";
 import RegistroPaciente from "./paginas/RegistroPaciente";
+import Tutores from "./paginas/pediatria/Tutores";
+import EsquemaVacunas from "./paginas/pediatria/EsquemaVacunas";
 import { SesionProvider, useSesion, useUsuario } from "./sesion";
 import { AvisoProvider } from "./ui/componentes";
 
@@ -39,6 +41,9 @@ function Paginas() {
     case "ordenes": return esLab ? <OrdenesDia /> : <Inicio />;
     case "resultados": return esLab ? <Resultados idOrden={id!} key={id} /> : <Inicio />;
     case "reporte": return esLab ? <Reporte idOrden={id!} key={id} /> : <Inicio />;
+    // Propias de Pediatría
+    case "tutores": return usuario.institucion === "pediatria" ? <Tutores /> : <Inicio />;
+    case "vacunacion": return usuario.institucion === "pediatria" ? <EsquemaVacunas /> : <Inicio />;
     default: return <Inicio />;
   }
 }

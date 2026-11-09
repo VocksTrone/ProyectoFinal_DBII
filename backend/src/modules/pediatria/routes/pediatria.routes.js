@@ -1,18 +1,38 @@
 const { Router } = require('express');
-const pediatriaController = require('../controllers/pediatria.controller');
+const c = require('../controllers/pediatria.controller');
+const { authenticate } = require('../../../middlewares/auth');
+const { authorizeRoles } = require('../../../middlewares/rbac');
+const { soloInstitucion } = require('../../../middlewares/adaptador');
 
 const router = Router();
 
-router.get('/', pediatriaController.getStatus);
+// Estado del módulo (informativo, abierto o con token)
+router.get('/', c.getStatus);
 
-router.get('/pacientes', pediatriaController.getPacientes);
+// Todas las operaciones de datos requieren token y pertenecer a 'pediatria'
+router.use(authenticate, soloInstitucion('pediatria'));
 
-router.post('/pacientes', pediatriaController.createPaciente);
+const medico = authorizeRoles('medico');
 
-router.get('/tutores', pediatriaController.getTutores);
+// Tutores / Encargados
+router.get('/tutores', c.listarTutores);
+router.post('/tutores', c.crearTutor);
+router.get('/tutores/:id', c.obtenerTutor);
 
-router.post('/tutores', pediatriaController.createTutor);
+// Vacunas del esquema
+router.get('/vacunas', c.listarVacunas);
 
-router.post('/controles', pediatriaController.createControl);
+// Controles antropométricos de crecimiento y desarrollo
+router.get('/pacientes/:id/controles', c.obtenerControles);
+router.post('/pacientes/:id/controles', medico, c.registrarControl);
+
+// Carné y esquema de vacunación del paciente
+router.get('/pacientes/:id/vacunas', c.obtenerEsquema);
+router.post('/pacientes/:id/vacunas', medico, c.registrarVacuna);
+
+// Compatibilidad con rutas directas del módulo
+router.get('/pacientes', c.getPacientes);
+router.post('/pacientes', c.createPaciente);
+router.post('/controles', medico, c.createControl);
 
 module.exports = router;

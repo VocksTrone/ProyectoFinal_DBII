@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../../api/cliente";
 import type { Atencion, Cita, Diagnostico, ItemCatalogo, MedicamentoRecetado, Paciente } from "../../api/tipos";
 import { useNav } from "../../navegacion";
+import { useUsuario } from "../../sesion";
 import { Button, Cargando, EmptyState, ErrorCaja, Field, Icon, PageTitle, fechaCorta, hoyISO, useAviso, useCarga } from "../../ui/componentes";
 
 const PASOS = ["Motivo y notas", "Diagnósticos", "Tratamientos", "Receta"];
@@ -12,7 +13,9 @@ const nuevoMedicamento = (): MedicamentoRecetado => ({ id_medicamento: "", dosis
 
 export default function NuevaConsulta({ idPaciente, idCitaInicial }: { idPaciente: string; idCitaInicial?: string }) {
   const { ir } = useNav();
+  const usuario = useUsuario();
   const aviso = useAviso();
+  const esHospital = usuario.institucion === "hospital";
   const [paso, setPaso] = useState(1);
   const [motivo, setMotivo] = useState("");
   const [notas, setNotas] = useState("");
@@ -28,7 +31,7 @@ export default function NuevaConsulta({ idPaciente, idCitaInicial }: { idPacient
     const [paciente, catalogo, citas] = await Promise.all([
       api.get<Paciente>(`/pacientes/${idPaciente}`),
       api.get<ItemCatalogo[]>("/catalogos/medicamentos"),
-      api.get<Cita[]>(`/hospital/citas?id_paciente=${idPaciente}`),
+      esHospital ? api.get<Cita[]>(`/hospital/citas?id_paciente=${idPaciente}`) : Promise.resolve([]),
     ]);
     return { paciente, catalogo, citas: citas.filter((c) => c.estado === "programada") };
   }, [idPaciente]);

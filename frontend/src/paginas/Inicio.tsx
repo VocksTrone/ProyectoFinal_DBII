@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import { api, ApiError } from "../api/cliente";
-import type { Atencion, Cita, Internamiento, Paciente } from "../api/tipos";
+import type { Atencion, Cita, Internamiento, Paciente, Tutor, VacunaCatalogo } from "../api/tipos";
 import { INSTITUCIONES } from "../instituciones";
 import { Pagina, useNav } from "../navegacion";
 import { useUsuario } from "../sesion";
-import { Avatar, Button, Cargando, EmptyState, ErrorCaja, Icon, IconName, PageTitle, hoyISO, horaDe, useCarga } from "../ui/componentes";
+import { Avatar, Button, Cargando, EmptyState, ErrorCaja, Icon, IconName, PageTitle, hoyISO, horaDe, edad, useCarga } from "../ui/componentes";
 import { ESTADO_ORDEN } from "./laboratorio/util";
 
 type Orden = Atencion & { paciente: { id: string; nombre: string } | null };
@@ -31,7 +31,7 @@ export default function Inicio() {
 
   return <div>
     <PageTitle eyebrow={fecha} title={`${saludo}, ${nombre}`} description={`Resumen de tu jornada en ${inst.nombre} · datos en ${inst.motor}.`} actions={<Button icon="plus" onClick={() => ir("registro")}>Nuevo paciente</Button>} />
-    {usuario.institucion === "hospital" ? <PanelHospital /> : usuario.institucion === "laboratorio" ? <PanelLaboratorio /> : <PanelGeneral />}
+    {usuario.institucion === "hospital" ? <PanelHospital /> : usuario.institucion === "laboratorio" ? <PanelLaboratorio /> : usuario.institucion === "pediatria" ? <PanelPediatria /> : <PanelGeneral />}
   </div>;
 }
 
@@ -123,6 +123,70 @@ function PanelLaboratorio() {
         { pagina: "registro", icono: "users", titulo: "Nuevo paciente", texto: "Registrar paciente" },
         { pagina: "pacientes", icono: "search", titulo: "Buscar paciente", texto: "Historial de órdenes" },
       ]} /></aside>
+    </div>
+  </>;
+}
+
+// ---------- Centro Médico Pediátrico ----------
+
+function PanelPediatria() {
+  const usuario = useUsuario();
+  const { ir } = useNav();
+  const { datos, error, cargando, recargar } = useCarga(async () => {
+    const [pacientes, tutores, vacunas] = await Promise.all([
+      api.get<Paciente[]>("/pacientes"),
+      api.get<Tutor[]>("/pediatria/tutores"),
+      api.get<VacunaCatalogo[]>("/pediatria/vacunas"),
+    ]);
+    return { pacientes, tutores, vacunas };
+  }, []);
+
+  if (cargando) return <Cargando texto="Cargando panel pediátrico..." />;
+  if (error || !datos) return <ErrorCaja error={error} reintentar={recargar} />;
+  const { pacientes, tutores, vacunas } = datos;
+  const activos = pacientes.filter((p) => p.estado === "activo");
+
+  return <>
+    <div className="stats-grid">
+      <Tarjeta icono="users" color="aqua" titulo="PACIENTES PEDIÁTRICOS" valor={pacientes.length} nota={`${activos.length} activos en control`} />
+      <Tarjeta icono="heart" color="blue" titulo="TUTORES REGISTRADOS" valor={tutores.length} nota="Padres y responsables legales" />
+      <Tarjeta icono="shield" color="amber" titulo="ESQUEMA DE VACUNAS" valor={vacunas.length} nota="Biológicos oficiales en MySQL" />
+    </div>
+    <div className="dashboard-grid">
+      <section className="card schedule-card">
+        <div className="card-header">
+          <div>
+            <h2>Pacientes pediátricos</h2>
+            <span>{activos.length} infantes registrados en el sistema</span>
+          </div>
+          <button className="link-btn" onClick={() => ir("pacientes")}>Ver todos <Icon name="chevron" size={15} /></button>
+        </div>
+        {pacientes.length === 0 ? (
+          <EmptyState title="No hay pacientes pediátricos" description="Registra el primer infante." action={<Button icon="plus" onClick={() => ir("registro")}>Nuevo paciente</Button>} />
+        ) : (
+          <div className="appointment-list">
+            {pacientes.slice(0, 5).map((p) => (
+              <button className="appointment" key={p.id} onClick={() => ir("historial", p.id)}>
+                <Avatar nombre={`${p.nombres} ${p.apellidos}`} />
+                <div className="appointment-info">
+                  <strong>{p.nombres} {p.apellidos}</strong>
+                  <span>{edad(p.fecha_nacimiento)} · {p.extra?.encargado ? `Tutor: ${p.extra.encargado.nombres} (${p.extra.encargado.parentesco})` : `Expediente PED-${p.id.padStart(4, "0")}`}</span>
+                </div>
+                <span className={`status ${p.estado === "archivado" ? "archivado" : ""}`}>{p.estado === "activo" ? "Activo" : "Archivado"}</span>
+                <Icon name="chevron" size={16} />
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+      <aside className="right-column">
+        <Accesos items={[
+          { pagina: "registro", icono: "plus", titulo: "Nuevo paciente", texto: "Registrar infante" },
+          { pagina: "tutores", icono: "users", titulo: "Tutores legales", texto: `${tutores.length} registrados` },
+          { pagina: "vacunacion", icono: "shield", titulo: "Esquema de vacunas", texto: `${vacunas.length} biológicos` },
+          { pagina: "pacientes", icono: "search", titulo: "Directorio", texto: `${pacientes.length} expedientes` },
+        ]} />
+      </aside>
     </div>
   </>;
 }

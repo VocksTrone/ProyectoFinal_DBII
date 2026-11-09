@@ -77,6 +77,50 @@ export type Historial = {
   extra?: Record<string, any>;
 };
 
+// Pediatría
+export type ControlCrecimiento = {
+  id: string;
+  fecha: string;
+  peso: number;
+  talla: number;
+  perimetro_cefalico: number | null;
+  edad_meses: number;
+  observaciones?: string | null;
+};
+
+export type VacunaCatalogo = {
+  id: string;
+  nombre: string;
+  enfermedad_previene: string;
+  dosis_requeridas: number;
+};
+
+export type VacunaRegistro = {
+  id: string;
+  id_vacuna: string;
+  vacuna: string;
+  enfermedad_previene: string;
+  numero_dosis: number;
+  dosis_requeridas: number;
+  fecha_aplicacion: string;
+  proxima_fecha?: string | null;
+  lote?: string | null;
+  profesional?: string | null;
+  observaciones?: string | null;
+};
+
+export type Tutor = {
+  id: string;
+  nombres: string;
+  apellidos: string;
+  nombre_completo: string;
+  parentesco: string;
+  telefono: string;
+  direccion?: string | null;
+  correo?: string | null;
+  dpi?: string | null;
+};
+
 // Laboratorio
 export type ExamenOrden = {
   id: string;

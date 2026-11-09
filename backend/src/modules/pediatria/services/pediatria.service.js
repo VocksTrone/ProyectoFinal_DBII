@@ -1,41 +1,44 @@
-const { TutorPediatria, PacientePediatrico, ControlCrecimiento } = require('../models');
+const pediatriaAdapter = require('../../../adaptadores/mysql/pediatria');
 const { mysqlPool } = require('../../../config/mysql');
 
 class PediatriaService {
   async getStatus() {
     return {
       institution: 'Centro Médico Pediátrico',
-      engine: 'MySQL',
+      engine: 'MySQL (InnoDB)',
       status: 'active',
       description: 'Módulo de tutores, pacientes pediátricos, controles de crecimiento y desarrollo',
     };
   }
 
-  async getAllPacientes() {
-    return await PacientePediatrico.findAll({
-      include: [{ model: TutorPediatria, as: 'tutor' }],
-      limit: 100,
-      order: [['id_paciente', 'DESC']],
-    });
+  async getAllPacientes(buscar = '') {
+    const [rows] = await mysqlPool.query(
+      `SELECT p.*, e.nombres as tutor_nombres, e.apellidos as tutor_apellidos, e.telefono as tutor_telefono
+       FROM paciente p
+       LEFT JOIN encargado e ON e.id_encargado = p.id_encargado
+       WHERE ? = '' OR CONCAT(p.nombres, ' ', p.apellidos) LIKE CONCAT('%', ?, '%')
+       ORDER BY p.id_paciente DESC
+       LIMIT 100`,
+      [buscar, buscar]
+    );
+    return rows;
   }
 
   async createPaciente(data) {
-    return await PacientePediatrico.create(data);
+    const adp = require('../../../adaptadores').obtenerAdaptador('pediatria');
+    return adp.crearPaciente(data);
   }
 
-  async getAllTutores() {
-    return await TutorPediatria.findAll({
-      limit: 100,
-      order: [['id_tutor', 'DESC']],
-    });
+  async getAllTutores(buscar = '') {
+    return pediatriaAdapter.listarTutores(buscar);
   }
 
   async createTutor(data) {
-    return await TutorPediatria.create(data);
+    return pediatriaAdapter.crearTutor(data);
   }
 
   async createControlCrecimiento(data) {
-    return await ControlCrecimiento.create(data);
+    return pediatriaAdapter.registrarControlCrecimiento(data.id_paciente, data);
   }
 
   async executeRawQuery(sql, params = []) {

@@ -1,0 +1,458 @@
+[1mdiff --git a/backend/src/modules/odontologia/controllers/odontologia.controller.js b/backend/src/modules/odontologia/controllers/odontologia.controller.js[m
+[1mindex 38b7fa4..25369de 100644[m
+[1m--- a/backend/src/modules/odontologia/controllers/odontologia.controller.js[m
+[1m+++ b/backend/src/modules/odontologia/controllers/odontologia.controller.js[m
+[36m@@ -4,28 +4,120 @@[m [mconst { asyncHandler, sendSuccess } = require('../../../utils/helpers');[m
+ class OdontologiaController {[m
+   getStatus = asyncHandler(async (req, res) => {[m
+     const status = await odontologiaService.getStatus();[m
+[31m-    return sendSuccess(res, status, 'Información del módulo Clínica Odontológica');[m
+[32m+[m[32m    return sendSuccess(res, status, 'Información del módulo Clínica Odontológica (Firestore)');[m
+   });[m
+ [m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // PACIENTES[m
+[32m+[m[32m  // ==========================================[m
+   getPacientes = asyncHandler(async (req, res) => {[m
+[31m-    const pacientes = await odontologiaService.getAllPacientes();[m
+[32m+[m[32m    const limit = req.query.limit || 100;[m
+[32m+[m[32m    const pacientes = await odontologiaService.getAllPacientes(limit);[m
+     return sendSuccess(res, pacientes, 'Lista de pacientes odontológicos obtenida');[m
+   });[m
+ [m
+[32m+[m[32m  getPacienteById = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const paciente = await odontologiaService.getPacienteById(req.params.id);[m
+[32m+[m[32m    return sendSuccess(res, paciente, 'Paciente odontológico obtenido con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+   createPaciente = asyncHandler(async (req, res) => {[m
+     const nuevoPaciente = await odontologiaService.createPaciente(req.body);[m
+     return sendSuccess(res, nuevoPaciente, 'Paciente odontológico registrado con éxito', 201);[m
+   });[m
+ [m
+[32m+[m[32m  updatePaciente = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const paciente = await odontologiaService.updatePaciente(req.params.id, req.body);[m
+[32m+[m[32m    return sendSuccess(res, paciente, 'Paciente odontológico actualizado con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  addHistorialPaciente = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const paciente = await odontologiaService.addHistorialPaciente(req.params.id, req.body);[m
+[32m+[m[32m    return sendSuccess(res, paciente, 'Entrada de historial odontológico agregada con éxito', 201);[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // ODONTOLOGOS[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  getOdontologos = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const limit = req.query.limit || 100;[m
+[32m+[m[32m    const odontologos = await odontologiaService.getAllOdontologos(limit);[m
+[32m+[m[32m    return sendSuccess(res, odontologos, 'Lista de odontólogos obtenida');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  getOdontologoById = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const odontologo = await odontologiaService.getOdontologoById(req.params.id);[m
+[32m+[m[32m    return sendSuccess(res, odontologo, 'Odontólogo obtenido con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  createOdontologo = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const nuevoOdontologo = await odontologiaService.createOdontologo(req.body);[m
+[32m+[m[32m    return sendSuccess(res, nuevoOdontologo, 'Odontólogo registrado con éxito', 201);[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  updateOdontologo = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const odontologo = await odontologiaService.updateOdontologo(req.params.id, req.body);[m
+[32m+[m[32m    return sendSuccess(res, odontologo, 'Odontólogo actualizado con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // CITAS[m
+[32m+[m[32m  // ==========================================[m
+   getCitas = asyncHandler(async (req, res) => {[m
+[31m-    const citas = await odontologiaService.getAllCitas();[m
+[32m+[m[32m    const { paciente_id, odontologo_id, estado, limit } = req.query;[m
+[32m+[m[32m    const citas = await odontologiaService.getAllCitas({ paciente_id, odontologo_id, estado, limit });[m
+     return sendSuccess(res, citas, 'Lista de citas odontológicas obtenida');[m
+   });[m
+ [m
+[32m+[m[32m  getCitaById = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const cita = await odontologiaService.getCitaById(req.params.id);[m
+[32m+[m[32m    return sendSuccess(res, cita, 'Cita odontológica obtenida con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+   createCita = asyncHandler(async (req, res) => {[m
+     const nuevaCita = await odontologiaService.createCita(req.body);[m
+     return sendSuccess(res, nuevaCita, 'Cita odontológica agendada con éxito', 201);[m
+   });[m
+[32m+[m
+[32m+[m[32m  updateCita = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const cita = await odontologiaService.updateCita(req.params.id, req.body);[m
+[32m+[m[32m    return sendSuccess(res, cita, 'Cita odontológica actualizada con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  updateEstadoCita = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const { estado } = req.body;[m
+[32m+[m[32m    const cita = await odontologiaService.updateEstadoCita(req.params.id, estado);[m
+[32m+[m[32m    return sendSuccess(res, cita, `Estado de la cita actualizado a "${estado}"`);[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // PAGOS (Mixtos y Honorarios)[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  getPagos = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const { paciente_id, cita_id, estado_pago, limit } = req.query;[m
+[32m+[m[32m    const pagos = await odontologiaService.getAllPagos({ paciente_id, cita_id, estado_pago, limit });[m
+[32m+[m[32m    return sendSuccess(res, pagos, 'Lista de pagos odontológicos obtenida');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  getPagoById = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const pago = await odontologiaService.getPagoById(req.params.id);[m
+[32m+[m[32m    return sendSuccess(res, pago, 'Pago odontológico obtenido con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  getPagosByCita = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const pagos = await odontologiaService.getPagosByCita(req.params.citaId);[m
+[32m+[m[32m    return sendSuccess(res, pagos, 'Pagos de la cita obtenidos con éxito');[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  createPago = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const nuevoPago = await odontologiaService.createPago(req.body);[m
+[32m+[m[32m    return sendSuccess(res, nuevoPago, 'Pago odontológico procesado con éxito', 201);[m
+[32m+[m[32m  });[m
+[32m+[m
+[32m+[m[32m  updatePago = asyncHandler(async (req, res) => {[m
+[32m+[m[32m    const pago = await odontologiaService.updatePago(req.params.id, req.body);[m
+[32m+[m[32m    return sendSuccess(res, pago, 'Pago odontológico actualizado con éxito');[m
+[32m+[m[32m  });[m
+ }[m
+ [m
+ module.exports = new OdontologiaController();[m
+[1mdiff --git a/backend/src/modules/odontologia/routes/odontologia.routes.js b/backend/src/modules/odontologia/routes/odontologia.routes.js[m
+[1mindex 87035a4..a79095e 100644[m
+[1m--- a/backend/src/modules/odontologia/routes/odontologia.routes.js[m
+[1m+++ b/backend/src/modules/odontologia/routes/odontologia.routes.js[m
+[36m@@ -2,12 +2,35 @@[m [mconst { Router } = require('express');[m
+ const odontologiaController = require('../controllers/odontologia.controller');[m
+ [m
+ const router = Router();[m
+[32m+[m
+[32m+[m[32m// Estado e información del módulo[m
+ router.get('/', odontologiaController.getStatus);[m
+ [m
+[32m+[m[32m// 1. Pacientes[m
+ router.get('/pacientes', odontologiaController.getPacientes);[m
+ router.post('/pacientes', odontologiaController.createPaciente);[m
+[32m+[m[32mrouter.get('/pacientes/:id', odontologiaController.getPacienteById);[m
+[32m+[m[32mrouter.put('/pacientes/:id', odontologiaController.updatePaciente);[m
+[32m+[m[32mrouter.post('/pacientes/:id/historial', odontologiaController.addHistorialPaciente);[m
+[32m+[m
+[32m+[m[32m// 2. Odontólogos[m
+[32m+[m[32mrouter.get('/odontologos', odontologiaController.getOdontologos);[m
+[32m+[m[32mrouter.post('/odontologos', odontologiaController.createOdontologo);[m
+[32m+[m[32mrouter.get('/odontologos/:id', odontologiaController.getOdontologoById);[m
+[32m+[m[32mrouter.put('/odontologos/:id', odontologiaController.updateOdontologo);[m
+ [m
+[32m+[m[32m// 3. Citas[m
+ router.get('/citas', odontologiaController.getCitas);[m
+ router.post('/citas', odontologiaController.createCita);[m
+[32m+[m[32mrouter.get('/citas/:id', odontologiaController.getCitaById);[m
+[32m+[m[32mrouter.put('/citas/:id', odontologiaController.updateCita);[m
+[32m+[m[32mrouter.patch('/citas/:id/estado', odontologiaController.updateEstadoCita);[m
+[32m+[m
+[32m+[m[32m// 4. Pagos (Mixtos y Honorarios)[m
+[32m+[m[32mrouter.get('/pagos', odontologiaController.getPagos);[m
+[32m+[m[32mrouter.post('/pagos', odontologiaController.createPago);[m
+[32m+[m[32mrouter.get('/pagos/:id', odontologiaController.getPagoById);[m
+[32m+[m[32mrouter.put('/pagos/:id', odontologiaController.updatePago);[m
+[32m+[m[32mrouter.get('/pagos/cita/:citaId', odontologiaController.getPagosByCita);[m
+ [m
+ module.exports = router;[m
+[1mdiff --git a/backend/src/modules/odontologia/services/odontologia.service.js b/backend/src/modules/odontologia/services/odontologia.service.js[m
+[1mindex 6602746..33d55de 100644[m
+[1m--- a/backend/src/modules/odontologia/services/odontologia.service.js[m
+[1m+++ b/backend/src/modules/odontologia/services/odontologia.service.js[m
+[36m@@ -1,5 +1,14 @@[m
+ const { getFirestore, isFirebaseReady } = require('../../../config/firebase');[m
+ const { AppError } = require('../../../utils/helpers');[m
+[32m+[m[32mconst {[m
+[32m+[m[32m  PacienteModel,[m
+[32m+[m[32m  OdontologoModel,[m
+[32m+[m[32m  CitaModel,[m
+[32m+[m[32m  PagoModel,[m
+[32m+[m[32m  ESTADOS_CITA,[m
+[32m+[m[32m  ESTADOS_PAGO,[m
+[32m+[m[32m  METODOS_PAGO,[m
+[32m+[m[32m} = require('../models');[m
+ [m
+ class OdontologiaService {[m
+   async getStatus() {[m
+[36m@@ -7,73 +16,218 @@[m [mclass OdontologiaService {[m
+       institution: 'Clínica Odontológica',[m
+       engine: 'Firebase Firestore (NoSQL Documental)',[m
+       status: isFirebaseReady() ? 'connected' : 'pending_credentials',[m
+[31m-      collections: ['pacientes (con historial_odontologico embebido)', 'citas', 'odontologos'],[m
+[31m-      description: 'Módulo de tratamientos dentales, citas y fichas clínicas odontológicas',[m
+[32m+[m[32m      collections: {[m
+[32m+[m[32m        pacientes: 'Documentos con subdocumentos embebidos (contacto, contacto_emergencia, historial_odontologico)',[m
+[32m+[m[32m        odontologos: 'Profesionales y especialistas activos',[m
+[32m+[m[32m        citas: 'Agenda odontológica con referencias foráneas (paciente_id, odontologo_id)',[m
+[32m+[m[32m        pagos: 'Gestión financiera con soporte para pagos mixtos (Efectivo/Tarjeta/Transferencia) y honorarios médicos',[m
+[32m+[m[32m      },[m
+[32m+[m[32m      supported_values: {[m
+[32m+[m[32m        estados_cita: ESTADOS_CITA,[m
+[32m+[m[32m        estados_pago: ESTADOS_PAGO,[m
+[32m+[m[32m        metodos_pago: METODOS_PAGO,[m
+[32m+[m[32m      },[m
+     };[m
+   }[m
+ [m
+[31m-  async getAllPacientes() {[m
+[31m-    const db = getFirestore();[m
+[31m-    if (!db) {[m
+[31m-      throw new AppError('Firebase Firestore no está inicializado o configurado', 503);[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // PACIENTES[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  async getAllPacientes(limit = 100) {[m
+[32m+[m[32m    return PacienteModel.findAll(limit);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async getPacienteById(id) {[m
+[32m+[m[32m    const paciente = await PacienteModel.findById(id);[m
+[32m+[m[32m    if (!paciente) {[m
+[32m+[m[32m      throw new AppError(`Paciente con ID ${id} no encontrado`, 404);[m
+     }[m
+[31m-    const snapshot = await db.collection('pacientes').limit(100).get();[m
+[31m-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));[m
+[32m+[m[32m    return paciente;[m
+   }[m
+ [m
+   async createPaciente(data) {[m
+[31m-    const db = getFirestore();[m
+[31m-    if (!db) {[m
+[31m-      throw new AppError('Firebase Firestore no está inicializado o configurado', 503);[m
+[31m-    }[m
+[31m-[m
+[31m-    const pacienteData = {[m
+[31m-      cui: data.cui,[m
+[31m-      nombre: data.nombre,[m
+[31m-      apellidos: data.apellidos,[m
+[31m-      telefono: data.telefono || null,[m
+[31m-      email: data.email || null,[m
+[31m-      fecha_creacion: new Date().toISOString(),[m
+[31m-      historial_odontologico: data.historial_odontologico || {[m
+[31m-        alergias_anestesia: false,[m
+[31m-        enfermedades_periodontales: false,[m
+[31m-        intervenciones_previas: [],[m
+[31m-        odontograma: [],[m
+[31m-      },[m
+[31m-    };[m
+[32m+[m[32m    // Si envían DPI, verificar si ya existe[m
+[32m+[m[32m    if (data.dpi) {[m
+[32m+[m[32m      const existing = await PacienteModel.findByDpi(data.dpi);[m
+[32m+[m[32m      if (existing) {[m
+[32m+[m[32m        throw new AppError(`Ya existe un paciente registrado con el DPI "${data.dpi}" (ID: ${existing.id})`, 409);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Si viene historial odontológico inicial con odontologo_id, verificar que existan[m
+[32m+[m[32m    if (Array.isArray(data.historial_odontologico)) {[m
+[32m+[m[32m      for (const entry of data.historial_odontologico) {[m
+[32m+[m[32m        if (entry.odontologo_id) {[m
+[32m+[m[32m          const odontologo = await OdontologoModel.findById(entry.odontologo_id);[m
+[32m+[m[32m          if (!odontologo) {[m
+[32m+[m[32m            throw new AppError(`Odontólogo con ID "${entry.odontologo_id}" en historial no existe`, 404);[m
+[32m+[m[32m          }[m
+[32m+[m[32m        }[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    return PacienteModel.create(data);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async updatePaciente(id, data) {[m
+[32m+[m[32m    return PacienteModel.update(id, data);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async addHistorialPaciente(pacienteId, historialData) {[m
+[32m+[m[32m    // Verificar que el paciente exista[m
+[32m+[m[32m    const paciente = await PacienteModel.findById(pacienteId);[m
+[32m+[m[32m    if (!paciente) {[m
+[32m+[m[32m      throw new AppError(`Paciente con ID "${pacienteId}" no encontrado`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Verificar que el odontólogo referenciado exista[m
+[32m+[m[32m    if (historialData && historialData.odontologo_id) {[m
+[32m+[m[32m      const odontologo = await OdontologoModel.findById(historialData.odontologo_id);[m
+[32m+[m[32m      if (!odontologo) {[m
+[32m+[m[32m        throw new AppError(`Odontólogo referenciado con ID "${historialData.odontologo_id}" no existe`, 404);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    return PacienteModel.addHistorialEntry(pacienteId, historialData);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // ODONTOLOGOS[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  async getAllOdontologos(limit = 100) {[m
+[32m+[m[32m    return OdontologoModel.findAll(limit);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async getOdontologoById(id) {[m
+[32m+[m[32m    const odontologo = await OdontologoModel.findById(id);[m
+[32m+[m[32m    if (!odontologo) {[m
+[32m+[m[32m      throw new AppError(`Odontólogo con ID ${id} no encontrado`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    return odontologo;[m
+[32m+[m[32m  }[m
+ [m
+[31m-    const docRef = await db.collection('pacientes').add(pacienteData);[m
+[31m-    return { id: docRef.id, ...pacienteData };[m
+[32m+[m[32m  async createOdontologo(data) {[m
+[32m+[m[32m    if (data.colegiado_numero) {[m
+[32m+[m[32m      const existing = await OdontologoModel.findByColegiado(data.colegiado_numero);[m
+[32m+[m[32m      if (existing) {[m
+[32m+[m[32m        throw new AppError(`Ya existe un odontólogo registrado con el colegiado "${data.colegiado_numero}" (ID: ${existing.id})`, 409);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    return OdontologoModel.create(data);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async updateOdontologo(id, data) {[m
+[32m+[m[32m    return OdontologoModel.update(id, data);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // CITAS[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  async getAllCitas(filters = {}) {[m
+[32m+[m[32m    return CitaModel.findAll(filters);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async getCitaById(id) {[m
+[32m+[m[32m    const cita = await CitaModel.findById(id);[m
+[32m+[m[32m    if (!cita) {[m
+[32m+[m[32m      throw new AppError(`Cita con ID ${id} no encontrada`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    return cita;[m
+   }[m
+ [m
+   async createCita(data) {[m
+[31m-    const db = getFirestore();[m
+[31m-    if (!db) {[m
+[31m-      throw new AppError('Firebase Firestore no está inicializado o configurado', 503);[m
+[31m-    }[m
+[31m-[m
+[31m-    const citaData = {[m
+[31m-      paciente_id: data.paciente_id,[m
+[31m-      odontologo_id: data.odontologo_id,[m
+[31m-      fecha_hora: data.fecha_hora,[m
+[31m-      motivo_consulta: data.motivo_consulta,[m
+[31m-      tratamiento_propuesto: data.tratamiento_propuesto || '',[m
+[31m-      estado: data.estado || 'programada',[m
+[31m-      costo_estimado: data.costo_estimado || 0,[m
+[31m-      creado_en: new Date().toISOString(),[m
+[31m-    };[m
+[32m+[m[32m    // Validación estricta de referencias cruzadas en Firestore[m
+[32m+[m[32m    const paciente = await PacienteModel.findById(data.paciente_id);[m
+[32m+[m[32m    if (!paciente) {[m
+[32m+[m[32m      throw new AppError(`Paciente con ID "${data.paciente_id}" no existe en Firestore`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    const odontologo = await OdontologoModel.findById(data.odontologo_id);[m
+[32m+[m[32m    if (!odontologo) {[m
+[32m+[m[32m      throw new AppError(`Odontólogo con ID "${data.odontologo_id}" no existe en Firestore`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    return CitaModel.create(data);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async updateCita(id, data) {[m
+[32m+[m[32m    if (data.paciente_id) {[m
+[32m+[m[32m      const paciente = await PacienteModel.findById(data.paciente_id);[m
+[32m+[m[32m      if (!paciente) throw new AppError(`Paciente con ID "${data.paciente_id}" no existe`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    if (data.odontologo_id) {[m
+[32m+[m[32m      const odontologo = await OdontologoModel.findById(data.odontologo_id);[m
+[32m+[m[32m      if (!odontologo) throw new AppError(`Odontólogo con ID "${data.odontologo_id}" no existe`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    return CitaModel.update(id, data);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async updateEstadoCita(id, estado) {[m
+[32m+[m[32m    return CitaModel.updateEstado(id, estado);[m
+[32m+[m[32m  }[m
+ [m
+[31m-    const docRef = await db.collection('citas').add(citaData);[m
+[31m-    return { id: docRef.id, ...citaData };[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  // PAGOS (Pagos Mixtos y Honorarios)[m
+[32m+[m[32m  // ==========================================[m
+[32m+[m[32m  async getAllPagos(filters = {}) {[m
+[32m+[m[32m    return PagoModel.findAll(filters);[m
+   }[m
+ [m
+[31m-  async getAllCitas() {[m
+[31m-    const db = getFirestore();[m
+[31m-    if (!db) {[m
+[31m-      throw new AppError('Firebase Firestore no está inicializado o configurado', 503);[m
+[32m+[m[32m  async getPagoById(id) {[m
+[32m+[m[32m    const pago = await PagoModel.findById(id);[m
+[32m+[m[32m    if (!pago) {[m
+[32m+[m[32m      throw new AppError(`Pago con ID ${id} no encontrado`, 404);[m
+     }[m
+[31m-    const snapshot = await db.collection('citas').orderBy('creado_en', 'desc').limit(50).get();[m
+[31m-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));[m
+[32m+[m[32m    return pago;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async getPagosByCita(citaId) {[m
+[32m+[m[32m    return PagoModel.findByCitaId(citaId);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async getPagosByPaciente(pacienteId) {[m
+[32m+[m[32m    return PagoModel.findByPacienteId(pacienteId);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async createPago(data) {[m
+[32m+[m[32m    // 1. Validar existencia del paciente referenciado[m
+[32m+[m[32m    const paciente = await PacienteModel.findById(data.paciente_id);[m
+[32m+[m[32m    if (!paciente) {[m
+[32m+[m[32m      throw new AppError(`Paciente referenciado con ID "${data.paciente_id}" no existe en Firestore`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // 2. Validar existencia de la cita referenciada[m
+[32m+[m[32m    const cita = await CitaModel.findById(data.cita_id);[m
+[32m+[m[32m    if (!cita) {[m
+[32m+[m[32m      throw new AppError(`Cita referenciada con ID "${data.cita_id}" no existe en Firestore`, 404);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // 3. Validar existencia del odontólogo referenciado en los honorarios[m
+[32m+[m[32m    const odontologoId = data.honorarios_medicos?.odontologo_id || cita.odontologo_id;[m
+[32m+[m[32m    if (odontologoId) {[m
+[32m+[m[32m      const odontologo = await OdontologoModel.findById(odontologoId);[m
+[32m+[m[32m      if (!odontologo) {[m
+[32m+[m[32m        throw new AppError(`Odontólogo referenciado en honorarios con ID "${odontologoId}" no existe en Firestore`, 404);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // 4. Si honorarios_medicos no tenía odontologo_id especificado, heredarlo de la cita[m
+[32m+[m[32m    if (data.honorarios_medicos && !data.honorarios_medicos.odontologo_id) {[m
+[32m+[m[32m      data.honorarios_medicos.odontologo_id = cita.odontologo_id;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    const nuevoPago = await PagoModel.create(data);[m
+[32m+[m
+[32m+[m[32m    // 5. Si el pago es completado, actualizar el estado de la cita a "Atendida" o "Confirmada" si procedía[m
+[32m+[m[32m    if (nuevoPago.estado_pago === 'Completado' && cita.estado !== 'Atendida') {[m
+[32m+[m[32m      await CitaModel.update(cita.id, { estado: 'Atendida' });[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    return nuevoPago;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async updatePago(id, data) {[m
+[32m+[m[32m    return PagoModel.update(id, data);[m
+   }[m
+ }[m
+ [m
