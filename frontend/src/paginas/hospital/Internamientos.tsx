@@ -3,7 +3,7 @@ import { api } from "../../api/cliente";
 import type { Internamiento, Paciente } from "../../api/tipos";
 import { useNav } from "../../navegacion";
 import { useUsuario } from "../../sesion";
-import { Avatar, Button, Cargando, EmptyState, ErrorCaja, Field, Modal, PageTitle, Search, fechaCorta, hoyISO, useAviso, useCarga } from "../../ui/componentes";
+import { Avatar, Button, Cargando, EmptyState, ErrorCaja, Field, Modal, PageTitle, Search, fechaCorta, filaClic, hoyISO, useAviso, useCarga } from "../../ui/componentes";
 import SelectorPaciente from "../../ui/SelectorPaciente";
 
 // Días entre dos fechas YYYY-MM-DD (la estancia cuenta el día de ingreso)
@@ -30,7 +30,7 @@ export default function Internamientos() {
       <div className="table-tools"><Search value={texto} onChange={setTexto} placeholder="Buscar paciente, médico o motivo..." /><label className="discharged-filter"><input type="checkbox" checked={conAltas} onChange={(e) => setConAltas(e.target.checked)} /> Mostrar dados de alta</label></div>
       {cargando ? <Cargando /> : error ? <div className="card-pad"><ErrorCaja error={error} reintentar={recargar} /></div> : visibles.length === 0 ? <EmptyState title={conAltas ? "Sin internamientos" : "No hay pacientes internados"} description="Los internamientos registrados aparecerán aquí." /> :
         <div className="table-scroll"><table><thead><tr><th>PACIENTE</th><th>MÉDICO RESPONSABLE</th><th>INGRESO</th><th>ESTANCIA</th><th>MOTIVO</th><th>ESTADO</th></tr></thead><tbody>
-          {visibles.map((i) => <tr key={i.id} onClick={() => ir("internamiento", i.id)}>
+          {visibles.map((i) => <tr key={i.id} {...filaClic(() => ir("internamiento", i.id))}>
             <td><Avatar nombre={i.paciente} /><div><strong>{i.paciente}</strong><span>Internamiento HG-I-{i.id.padStart(5, "0")}</span></div></td>
             <td>{i.medico}</td>
             <td>{fechaCorta(i.fecha_ingreso)}</td>

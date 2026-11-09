@@ -68,6 +68,19 @@ export function Avatar({ nombre, className = "" }: { nombre: string; className?:
   return <div className={`avatar ${colorDe(nombre)} ${className}`}>{iniciales(nombre)}</div>;
 }
 
+// Fila de tabla que se abre con clic o con Enter/Espacio (accesible con teclado)
+export const filaClic = (abrir: () => void) => ({
+  onClick: abrir,
+  tabIndex: 0,
+  role: "link" as const,
+  onKeyDown: (e: { key: string; preventDefault: () => void }) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      abrir();
+    }
+  },
+});
+
 // ---------- Estados de pantalla ----------
 
 export function Cargando({ texto = "Cargando..." }: { texto?: string }) {

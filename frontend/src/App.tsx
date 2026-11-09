@@ -1,4 +1,5 @@
 import "./extra.css";
+import "./pantallas.css";
 import { NavegacionProvider, useNav } from "./navegacion";
 import Historial from "./paginas/Historial";
 import Agenda from "./paginas/hospital/Agenda";

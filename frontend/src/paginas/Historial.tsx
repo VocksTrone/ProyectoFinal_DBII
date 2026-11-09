@@ -49,24 +49,36 @@ export default function Historial({ id }: Props) {
   return <div>
     <button className="back-link" onClick={() => ir("pacientes")}><Icon name="arrow" /> Volver a pacientes</button>
 
-    <section className="patient-hero">
-      <div className="patient-main"><Avatar nombre={nombre} className="patient-avatar" /><div>
-        <div className="name-line"><h1>{nombre}</h1>{archivado && <span className="archived-label">Archivado</span>}{internamientoActivo && !archivado && <span className="hospitalized-label"><Icon name="heart" size={12} />Internado</span>}</div>
-        <p>{formatoDpi(paciente.dpi)} <i /> {edad(paciente.fecha_nacimiento)} <i /> {sexoTexto(paciente.sexo)}</p>
-        <span>Expediente {esLab ? "LAB" : esPediatria ? "PED" : "HG"}-{paciente.id.slice(-6).toUpperCase().padStart(6, "0")} · Registrado el {fechaCorta(paciente.extra?.fecha_registro)}</span>
-      </div></div>
-      {!esLab && <div className="patient-alerts">
-        {alergias.length > 0 && <div className="alert allergy"><Icon name="activity" /><span><small>ALERGIA</small><strong>{alergias[0].descripcion || alergias[0].tipo}</strong></span></div>}
-        {paciente.extra?.tipo_sangre && <div className="alert blood"><Icon name="droplet" /><span><small>TIPO DE SANGRE</small><strong>{paciente.extra.tipo_sangre}</strong></span></div>}
-      </div>}
-      <div className="patient-actions">{!archivado && <>
-        <Button variant="secondary" icon="archive" onClick={() => setArchivar(true)}>Archivar historial</Button>
-        {usuario.institucion === "hospital" && esMedico && !internamientoActivo && <Button variant="secondary" icon="heart" onClick={() => setInternar(true)}>Internar paciente</Button>}
-        {puedeAtender && <Button icon="plus" onClick={() => ir("atencion", paciente.id)}>{esLab ? "Nueva orden de examen" : "Nueva consulta"}</Button>}
-      </>}</div>
-    </section>
+    <section className="card ficha">
+      <div className="ficha-top">
+        <Avatar nombre={nombre} className="patient-avatar" />
+        <div className="ficha-datos">
+          <h1>{nombre}</h1>
+          <p className="ficha-meta">
+            <span>{paciente.dpi ? `DPI ${formatoDpi(paciente.dpi)}` : "Sin DPI"}</span>
+            <span>{edad(paciente.fecha_nacimiento)}</span>
+            <span>{sexoTexto(paciente.sexo)}</span>
+          </p>
+          <p className="ficha-meta ficha-sub">
+            <span>Expediente {esLab ? "LAB" : esPediatria ? "PED" : "HG"}-{paciente.id.slice(-6).toUpperCase().padStart(6, "0")}</span>
+            <span>Registrado el {fechaCorta(paciente.extra?.fecha_registro)}</span>
+          </p>
+        </div>
+        <div className="patient-actions">{!archivado && <>
+          <Button variant="secondary" icon="archive" onClick={() => setArchivar(true)}>Archivar historial</Button>
+          {usuario.institucion === "hospital" && esMedico && !internamientoActivo && <Button variant="secondary" icon="heart" onClick={() => setInternar(true)}>Internar paciente</Button>}
+          {puedeAtender && <Button icon="plus" onClick={() => ir("atencion", paciente.id)}>{esLab ? "Nueva orden de examen" : "Nueva consulta"}</Button>}
+        </>}</div>
+      </div>
 
-    {archivado && <div className="archive-banner"><Icon name="archive" /><div><strong>Este historial está archivado desde el {fechaCorta(paciente.extra?.fecha_baja)}</strong><span>Modo de solo lectura. Motivo: {paciente.extra?.motivo_baja}</span></div></div>}
+      {/* Alertas grandes: lo primero que debe ver el personal */}
+      {(archivado || internamientoActivo || alergias.length > 0 || paciente.extra?.tipo_sangre) && <div className="ficha-alertas">
+        {archivado && <div className="alerta alerta-archivado"><Icon name="archive" size={22} /><div><small>HISTORIAL ARCHIVADO</small><strong>Solo lectura desde el {fechaCorta(paciente.extra?.fecha_baja)}</strong><span>{paciente.extra?.motivo_baja}</span></div></div>}
+        {internamientoActivo && !archivado && <button className="alerta alerta-internado" onClick={() => ir("internamiento", internamientoActivo.id)}><Icon name="heart" size={22} /><div><small>PACIENTE INTERNADO</small><strong>Desde el {fechaCorta(internamientoActivo.fecha_ingreso)}</strong><span>{internamientoActivo.motivo}</span></div><Icon name="chevron" size={16} /></button>}
+        {alergias.length > 0 && <div className="alerta alerta-alergia"><Icon name="alert" size={22} /><div><small>{alergias.length > 1 ? "ALERGIAS" : "ALERGIA"}</small><strong>{alergias.map((a) => a.descripcion || a.tipo).join(" · ")}</strong></div></div>}
+        {paciente.extra?.tipo_sangre && <div className="alerta alerta-sangre"><Icon name="droplet" size={22} /><div><small>TIPO DE SANGRE</small><strong className="sangre-valor">{paciente.extra.tipo_sangre}</strong></div></div>}
+      </div>}
+    </section>
 
     <div className="tabs">{inst.pestanas.map((t) => <button className={pestana === t ? "active" : ""} onClick={() => setPestana(t)} key={t}>{t}{!esMedico && PESTANAS_RESTRINGIDAS.includes(t) && <Icon name="lock" size={12} />}</button>)}</div>
 

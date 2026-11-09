@@ -9,6 +9,12 @@ import { ESTADO_ORDEN } from "./laboratorio/util";
 
 type Orden = Atencion & { paciente: { id: string; nombre: string } | null };
 
+// "23:00" -> { hora: "11:00", periodo: "PM" }
+const hora12 = (hhmm: string) => {
+  const h = Number(hhmm.slice(0, 2));
+  return { hora: `${((h + 11) % 12) + 1}:${hhmm.slice(3, 5)}`, periodo: h < 12 ? "AM" : "PM" };
+};
+
 function Tarjeta({ icono, color, titulo, valor, nota }: { icono: IconName; color: string; titulo: string; valor: ReactNode; nota: string }) {
   return <div className="stat-card"><div className={`stat-icon ${color}`}><Icon name={icono} /></div><div><span>{titulo}</span><strong>{valor}</strong><p>{nota}</p></div></div>;
 }
@@ -60,13 +66,13 @@ function PanelHospital() {
     <div className="stats-grid">
       <Tarjeta icono="calendar" color="aqua" titulo="CITAS PARA HOY" valor={citas.length} nota={`${pendientes.length} aún pendientes`} />
       <Tarjeta icono="heart" color="blue" titulo="PACIENTES INTERNADOS" valor={internados.length} nota="Internamientos activos" />
-      <Tarjeta icono="clock" color="amber" titulo="PRÓXIMA CITA" valor={proxima ? proxima.hora : "—"} nota={proxima ? proxima.paciente : "Sin citas pendientes"} />
+      <Tarjeta icono="clock" color="amber" titulo="PRÓXIMA CITA" valor={proxima ? `${hora12(proxima.hora).hora} ${hora12(proxima.hora).periodo}` : "—"} nota={proxima ? proxima.paciente : "Sin citas pendientes"} />
     </div>
     <div className="dashboard-grid">
       <section className="card schedule-card"><div className="card-header"><div><h2>Citas de hoy</h2><span>{citas.length} citas programadas</span></div><button className="link-btn" onClick={() => ir("agenda")}>Ver agenda completa <Icon name="chevron" size={15} /></button></div>
         {citas.length === 0 ? <EmptyState title="No hay citas hoy" description="Puedes agendar una desde la Agenda." action={<Button variant="secondary" icon="calendar" onClick={() => ir("agenda")}>Ir a la agenda</Button>} /> :
           <div className="appointment-list">{citas.map((c) => <button className="appointment" key={c.id} onClick={() => (usuario.rol === "medico" && c.estado === "programada" ? ir("atencion", c.id_paciente, c.id) : ir("historial", c.id_paciente))}>
-            <div className="appointment-time"><strong>{c.hora}</strong><span>{Number(c.hora.slice(0, 2)) < 12 ? "AM" : "PM"}</span></div>
+            <div className="appointment-time"><strong>{hora12(c.hora).hora}</strong><span>{hora12(c.hora).periodo}</span></div>
             <Avatar nombre={c.paciente} />
             <div className="appointment-info"><strong>{c.paciente}</strong><span>{c.medico} · {c.especialidad}</span></div>
             <span className={`status cita-estado-${c.estado}`}>{c.estado === "programada" ? "Programada" : c.estado === "atendida" ? "Atendida" : "Cancelada"}</span>

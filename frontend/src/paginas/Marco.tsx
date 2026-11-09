@@ -51,5 +51,7 @@ function Topbar() {
 }
 
 export default function Marco({ children }: { children: ReactNode }) {
-  return <div className="app-shell"><Sidebar /><div className="app-main"><Topbar /><main className="content">{children}</main></div></div>;
+  const usuario = useUsuario();
+  // data-institucion define el color de acento (index.css)
+  return <div className="app-shell" data-institucion={usuario.institucion}><Sidebar /><div className="app-main"><Topbar /><main className="content">{children}</main></div></div>;
 }

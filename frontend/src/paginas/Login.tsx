@@ -3,20 +3,30 @@ import { mensajeDeError } from "../api/cliente";
 import type { Institucion } from "../api/tipos";
 import { INSTITUCIONES } from "../instituciones";
 import { useSesion } from "../sesion";
-import { Button, Field, Icon } from "../ui/componentes";
+import { Button, Field, Icon, IconName } from "../ui/componentes";
 import { Logo } from "./Marco";
 
 // Usuarios de los datos de prueba (database/postgres, database/mongodb y database/mysql)
-const USUARIOS_PRUEBA = [
-  { usuario: "rdiaz@hospital", password: "Hospital2026!" },
-  { usuario: "lmendez@hospital", password: "Hospital2026!" },
-  { usuario: "gchoc@pediatria", password: "Pediatria2026!" },
-  { usuario: "sperez@pediatria", password: "Pediatria2026!" },
-  { usuario: "cgarcia@odontologia", password: "Odontologia2026!" },
-  { usuario: "mramirez@odontologia", password: "Odontologia2026!" },
-  { usuario: "acastillo@laboratorio", password: "Laboratorio2026!" },
-  { usuario: "pramirez@laboratorio", password: "Laboratorio2026!" },
+const USUARIOS_PRUEBA: { usuario: string; password: string; rol: string; institucion: Institucion }[] = [
+  { usuario: "rdiaz@hospital", password: "Hospital2026!", rol: "Médico", institucion: "hospital" },
+  { usuario: "lmendez@hospital", password: "Hospital2026!", rol: "Secretaria", institucion: "hospital" },
+  { usuario: "acastillo@laboratorio", password: "Laboratorio2026!", rol: "Laboratorista", institucion: "laboratorio" },
+  { usuario: "pramirez@laboratorio", password: "Laboratorio2026!", rol: "Secretaria", institucion: "laboratorio" },
+  { usuario: "gchoc@pediatria", password: "Pediatria2026!", rol: "Médico", institucion: "pediatria" },
+  { usuario: "sperez@pediatria", password: "Pediatria2026!", rol: "Secretaria", institucion: "pediatria" },
+  { usuario: "cgarcia@odontologia", password: "Odontologia2026!", rol: "Odontóloga", institucion: "odontologia" },
+  { usuario: "mramirez@odontologia", password: "Odontologia2026!", rol: "Secretaria", institucion: "odontologia" },
 ];
+
+// Cómo modela sus datos cada institución (se muestra en el panel izquierdo)
+const DESCRIPCION: Record<Institucion, { icono: IconName; modelo: string }> = {
+  hospital: { icono: "heart", modelo: "Relacional · transacciones estrictas" },
+  laboratorio: { icono: "flask", modelo: "Documental · resultados dinámicos" },
+  pediatria: { icono: "users", modelo: "Relacional · crecimiento y vacunas" },
+  odontologia: { icono: "activity", modelo: "Documental · atención ágil" },
+};
+
+const INSTITUCIONES_ORDEN = Object.keys(INSTITUCIONES) as Institucion[];
 
 export default function Login() {
   const { entrar } = useSesion();
@@ -43,9 +53,22 @@ export default function Login() {
   };
 
   return <main className="login-page">
-    <div className="login-brand-panel"><Logo /><div className="login-message"><span>HISTORIA CLÍNICA CONECTADA</span><h1>Una atención más humana comienza con mejor información.</h1><p>Cada institución guarda sus datos en su propio motor de base de datos. Al iniciar sesión, el sistema te conecta automáticamente con el de tu institución.</p><div className="institution-list">
-      {(Object.keys(INSTITUCIONES) as Institucion[]).map((k) => <div key={k}><Icon name="shield" /><span><b>{INSTITUCIONES[k].nombre}</b><small>{INSTITUCIONES[k].motor}</small></span></div>)}
-    </div></div><small>Proyecto Final · Bases de Datos II · Universidad Rafael Landívar</small></div>
+    <div className="login-brand-panel">
+      <Logo />
+      <div className="login-message">
+        <span>HISTORIA CLÍNICA CONECTADA</span>
+        <h1>Una atención más humana comienza con mejor información.</h1>
+        <p>Cada institución guarda sus datos en su propio motor de base de datos. Al iniciar sesión, el sistema te conecta automáticamente con el de tu institución.</p>
+        <div className="login-instituciones">
+          {INSTITUCIONES_ORDEN.map((k) => <div className="login-inst" data-inst={k} key={k} title={DESCRIPCION[k].modelo}>
+            <span className="login-inst-icono"><Icon name={DESCRIPCION[k].icono} size={13} /></span>
+            <b>{INSTITUCIONES[k].nombre}</b><em>{INSTITUCIONES[k].motor}</em>
+          </div>)}
+        </div>
+      </div>
+      <small>Proyecto Final · Bases de Datos II · Universidad Rafael Landívar</small>
+    </div>
+
     <div className="login-form-panel"><form className="login-form" onSubmit={enviar}>
       <div className="mobile-logo"><Logo /></div>
       <span className="welcome-label">BIENVENIDO</span>
@@ -55,8 +78,15 @@ export default function Login() {
       <Field label="Contraseña" full><div className="password-wrap"><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /><Icon name="lock" /></div></Field>
       {error && <div className="login-error"><Icon name="alert" size={16} />{error}</div>}
       <Button type="submit" disabled={enviando || !usuario || !password}>{enviando ? "Verificando..." : "Ingresar al sistema"}</Button>
-      {institucion && <div className="detected"><Icon name="shield" /><div><span>Institución detectada</span><strong>{institucion.nombre} · {institucion.motor}</strong></div><Icon name="check" /></div>}
-      <div className="demo-users"><span>Usuarios de prueba</span><div>{USUARIOS_PRUEBA.map((u) => <button type="button" className={usuario === u.usuario ? "active" : ""} onClick={() => { setUsuario(u.usuario); setPassword(u.password); }} key={u.usuario}>{u.usuario}</button>)}</div><small>Al elegir uno se completa su contraseña de prueba.</small></div>
+      {institucion && <div className="detected" data-inst={codigo}><Icon name="shield" /><div><span>Institución detectada</span><strong>{institucion.nombre} · {institucion.motor}</strong></div><Icon name="check" /></div>}
+
+      <div className="demo-grupos">
+        <div className="demo-grupos-titulo"><span>Usuarios de prueba</span><small>Al elegir uno se completa su contraseña</small></div>
+        {INSTITUCIONES_ORDEN.filter((k) => USUARIOS_PRUEBA.some((u) => u.institucion === k)).map((k) => <div className="demo-fila" data-inst={k} key={k}>
+          <span className="demo-fila-inst"><i />{INSTITUCIONES[k].nombre}</span>
+          <div className="demo-fila-botones">{USUARIOS_PRUEBA.filter((u) => u.institucion === k).map((u) => <button type="button" title={u.usuario} className={usuario === u.usuario ? "active" : ""} onClick={() => { setUsuario(u.usuario); setPassword(u.password); }} key={u.usuario}>{u.rol}</button>)}</div>
+        </div>)}
+      </div>
     </form></div>
   </main>;
 }
