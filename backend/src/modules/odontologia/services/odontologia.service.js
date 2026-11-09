@@ -30,9 +30,6 @@ class OdontologiaService {
     };
   }
 
-  // ==========================================
-  // PACIENTES
-  // ==========================================
   async getAllPacientes(limit = 100) {
     return PacienteModel.findAll(limit);
   }
@@ -46,7 +43,6 @@ class OdontologiaService {
   }
 
   async createPaciente(data) {
-    // Si envían DPI, verificar si ya existe
     if (data.dpi) {
       const existing = await PacienteModel.findByDpi(data.dpi);
       if (existing) {
@@ -54,7 +50,6 @@ class OdontologiaService {
       }
     }
 
-    // Si viene historial odontológico inicial con odontologo_id, verificar que existan
     if (Array.isArray(data.historial_odontologico)) {
       for (const entry of data.historial_odontologico) {
         if (entry.odontologo_id) {
@@ -74,13 +69,11 @@ class OdontologiaService {
   }
 
   async addHistorialPaciente(pacienteId, historialData) {
-    // Verificar que el paciente exista
     const paciente = await PacienteModel.findById(pacienteId);
     if (!paciente) {
       throw new AppError(`Paciente con ID "${pacienteId}" no encontrado`, 404);
     }
 
-    // Verificar que el odontólogo referenciado exista
     if (historialData && historialData.odontologo_id) {
       const odontologo = await OdontologoModel.findById(historialData.odontologo_id);
       if (!odontologo) {
@@ -91,9 +84,6 @@ class OdontologiaService {
     return PacienteModel.addHistorialEntry(pacienteId, historialData);
   }
 
-  // ==========================================
-  // ODONTOLOGOS
-  // ==========================================
   async getAllOdontologos(limit = 100) {
     return OdontologoModel.findAll(limit);
   }
@@ -120,9 +110,6 @@ class OdontologiaService {
     return OdontologoModel.update(id, data);
   }
 
-  // ==========================================
-  // CITAS
-  // ==========================================
   async getAllCitas(filters = {}) {
     return CitaModel.findAll(filters);
   }
@@ -136,7 +123,6 @@ class OdontologiaService {
   }
 
   async createCita(data) {
-    // Validación estricta de referencias cruzadas en Firestore
     const paciente = await PacienteModel.findById(data.paciente_id);
     if (!paciente) {
       throw new AppError(`Paciente con ID "${data.paciente_id}" no existe en Firestore`, 404);
@@ -166,9 +152,6 @@ class OdontologiaService {
     return CitaModel.updateEstado(id, estado);
   }
 
-  // ==========================================
-  // PAGOS (Pagos Mixtos y Honorarios)
-  // ==========================================
   async getAllPagos(filters = {}) {
     return PagoModel.findAll(filters);
   }
@@ -190,19 +173,16 @@ class OdontologiaService {
   }
 
   async createPago(data) {
-    // 1. Validar existencia del paciente referenciado
     const paciente = await PacienteModel.findById(data.paciente_id);
     if (!paciente) {
       throw new AppError(`Paciente referenciado con ID "${data.paciente_id}" no existe en Firestore`, 404);
     }
 
-    // 2. Validar existencia de la cita referenciada
     const cita = await CitaModel.findById(data.cita_id);
     if (!cita) {
       throw new AppError(`Cita referenciada con ID "${data.cita_id}" no existe en Firestore`, 404);
     }
 
-    // 3. Validar existencia del odontólogo referenciado en los honorarios
     const odontologoId = data.honorarios_medicos?.odontologo_id || cita.odontologo_id;
     if (odontologoId) {
       const odontologo = await OdontologoModel.findById(odontologoId);
@@ -211,14 +191,14 @@ class OdontologiaService {
       }
     }
 
-    // 4. Si honorarios_medicos no tenía odontologo_id especificado, heredarlo de la cita
+    // Sin odontólogo en los honorarios se toma el de la cita
     if (data.honorarios_medicos && !data.honorarios_medicos.odontologo_id) {
       data.honorarios_medicos.odontologo_id = cita.odontologo_id;
     }
 
     const nuevoPago = await PagoModel.create(data);
 
-    // 5. Si el pago es completado, actualizar el estado de la cita a "Atendida" o "Confirmada" si procedía
+    // Con el pago completado la cita queda como atendida
     if (nuevoPago.estado_pago === 'Completado' && cita.estado !== 'Atendida') {
       await CitaModel.update(cita.id, { estado: 'Atendida' });
     }

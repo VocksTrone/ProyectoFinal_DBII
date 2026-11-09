@@ -3,9 +3,6 @@ import { api } from "../../api/cliente";
 import type { Historial, Paciente, VacunaCatalogo } from "../../api/tipos";
 import { Button, EmptyState, Field, Icon, Modal, fechaCorta, hoyISO, useAviso, useCarga } from "../../ui/componentes";
 
-// =====================================================================
-// PESTAÑA: CONTROLES DE CRECIMIENTO Y DESARROLLO
-// =====================================================================
 
 type CrecimientoProps = {
   paciente: Paciente;
@@ -110,7 +107,6 @@ export function CrecimientoPaciente({ paciente, historial, puedeRegistrar, nuevo
   );
 }
 
-// Modal para registrar medición de crecimiento
 export function NuevoControlModal({
   paciente,
   cerrar,
@@ -217,9 +213,6 @@ export function NuevoControlModal({
   );
 }
 
-// =====================================================================
-// PESTAÑA: ESQUEMA Y CARNÉ DE VACUNACIÓN
-// =====================================================================
 
 type VacunasProps = {
   paciente: Paciente;
@@ -304,7 +297,6 @@ export function VacunasPaciente({ paciente, historial, puedeRegistrar, nuevaVacu
   );
 }
 
-// Modal para registrar aplicación de vacuna
 export function NuevaVacunaModal({
   paciente,
   cerrar,
@@ -322,7 +314,6 @@ export function NuevaVacunaModal({
   const [observaciones, setObservaciones] = useState("");
   const [enviando, setEnviando] = useState(false);
 
-  // Cargar catálogo de vacunas
   const { datos: catalogoVacunas, cargando } = useCarga(async () => {
     try {
       return await api.get<VacunaCatalogo[]>("/pediatria/vacunas");

@@ -1,9 +1,3 @@
-// =====================================================================
-// Adaptador de la Clínica Odontológica (Firebase Firestore)
-// Implementa el contrato común de la API para persistencia en Firestore
-// con almacenamiento resiliente y soporte para operaciones clínicas odontológicas.
-// =====================================================================
-
 const { getFirestore } = require('../../config/firebase');
 const { AppError } = require('../../utils/helpers');
 const {
@@ -18,17 +12,13 @@ const {
   CATALOGOS_ODONTOLOGIA,
 } = require('./comun');
 
-// Estado en memoria compartido durante la ejecución del proceso
-// Se sincroniza con Firestore cuando las credenciales y red están activas
+// Copia en memoria; se sincroniza con Firestore cuando hay conexión
 const memoria = {
   usuarios: [...USUARIOS_INICIALES],
   odontologos: [...ODONTOLOGOS_INICIALES],
   pacientes: JSON.parse(JSON.stringify(PACIENTES_INICIALES)),
 };
 
-// =====================================================================
-// Mecanismo de Circuit Breaker y Timeout para Firestore
-// =====================================================================
 let firestoreHabilitado = true;
 
 const conTimeout = (promesa, ms = 600) => {
@@ -45,26 +35,17 @@ const ejecutarFirestore = async (fn) => {
     if (!db) return null;
     return await conTimeout(fn(db), 600);
   } catch (err) {
-    // Si da error de autenticación, timeout o conexión, desactivar llamadas subsecuentes
+    // Sin credenciales o sin red se deja de intentar con Firestore
     firestoreHabilitado = false;
     return null;
   }
 };
 
-// =====================================================================
-// FUNCIONES DEL CONTRATO COMÚN DE LA API
-// =====================================================================
 
-/**
- * 1. Buscar usuario para login (@odontologia)
- * @param {string} usuario Nombre de usuario sin @odontologia (ej. "cgarcia", "mramirez", "dlopez")
- * @returns {Promise<{ id: string, nombre: string, rol: string, password_hash: string } | null>}
- */
 const buscarUsuario = async (usuario) => {
   const norm = String(usuario || '').trim().toLowerCase();
   if (!norm) return null;
 
-  // Intenta consulta en Firestore si está disponible
   const firestoreUser = await ejecutarFirestore(async (db) => {
     const snap = await db.collection('usuarios').where('usuario', '==', norm).where('activo', '==', true).limit(1).get();
     if (!snap.empty) {
@@ -83,7 +64,6 @@ const buscarUsuario = async (usuario) => {
 
   if (firestoreUser) return firestoreUser;
 
-  // Búsqueda en almacén de memoria
   const u = memoria.usuarios.find((x) => x.usuario.toLowerCase() === norm && x.activo);
   if (!u) return null;
 
@@ -96,11 +76,6 @@ const buscarUsuario = async (usuario) => {
   };
 };
 
-/**
- * 2. Buscar pacientes (por texto o DPI/CUI)
- * @param {string} texto Cadena de búsqueda (DPI o nombre)
- * @returns {Promise<Array>} Lista de pacientes en formato de contrato
- */
 const buscarPacientes = async (texto) => {
   const t = String(texto || '').trim().toLowerCase();
 
@@ -131,15 +106,9 @@ const buscarPacientes = async (texto) => {
   return filtrados.map(aPaciente);
 };
 
-/**
- * 3. Crear nuevo paciente odontológico
- * @param {Object} d Datos del paciente (nombres, apellidos, dpi, fecha_nacimiento, sexo, etc.)
- * @returns {Promise<Object>} Paciente registrado en formato de contrato
- */
 const crearPaciente = async (d) => {
   const dpiVal = vacio(d.dpi ? String(d.dpi).trim() : null);
 
-  // Validación de duplicado por DPI
   if (dpiVal) {
     const existenteMem = memoria.pacientes.find((p) => p.dpi === dpiVal);
     if (existenteMem) {
@@ -175,7 +144,7 @@ const crearPaciente = async (d) => {
     historial_odontologico: [],
   };
 
-  // Intenta persistir en Firestore de forma no bloqueante
+  // Se guarda en Firestore sin esperar la respuesta
   await ejecutarFirestore(async (db) => {
     const docRef = await db.collection('pacientes').add(nuevo);
     nuevo.id = docRef.id;
@@ -185,11 +154,6 @@ const crearPaciente = async (d) => {
   return aPaciente(nuevo);
 };
 
-/**
- * 4. Obtener paciente por ID
- * @param {string} id ID del paciente
- * @returns {Promise<Object|null>}
- */
 const obtenerPaciente = async (id) => {
   if (!esId(id)) return null;
 
@@ -207,11 +171,6 @@ const obtenerPaciente = async (id) => {
   return p ? aPaciente(p) : null;
 };
 
-/**
- * 5. Obtener historial clínico odontológico completo
- * @param {string} id ID del paciente
- * @returns {Promise<Object|null>}
- */
 const obtenerHistorial = async (id) => {
   const paciente = await obtenerPaciente(id);
   if (!paciente) return null;
@@ -233,7 +192,6 @@ const obtenerHistorial = async (id) => {
   const historialRaw = rawPaciente?.historial_odontologico || [];
   const atenciones = historialRaw.map((entry) => aAtencion(entry, memoria.odontologos));
 
-  // Orden descendente por fecha (más reciente primero)
   atenciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
   return {
@@ -247,12 +205,6 @@ const obtenerHistorial = async (id) => {
   };
 };
 
-/**
- * 6. Archivar o desactivar historial clínico del paciente odontológico
- * @param {string} id ID del paciente
- * @param {string} motivo Justificación de la baja
- * @returns {Promise<Object>} Paciente archivado
- */
 const archivarPaciente = async (id, motivo) => {
   const p = memoria.pacientes.find((x) => x.id === id);
   if (!p || p.estado === 'archivado') {
@@ -275,13 +227,6 @@ const archivarPaciente = async (id, motivo) => {
   return aPaciente(p);
 };
 
-/**
- * 7. Registrar atención odontológica (consulta, diagnósticos, tratamientos y odontograma)
- * @param {string} idPaciente ID del paciente
- * @param {Object} d Datos de la atención (motivo, notas, diagnosticos, receta, extra)
- * @param {Object} usuario Usuario autenticado que registra
- * @returns {Promise<Object>} Atención registrada
- */
 const registrarAtencion = async (idPaciente, d, usuario) => {
   const paciente = memoria.pacientes.find((x) => x.id === idPaciente);
   if (!paciente) {
@@ -291,7 +236,6 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
     throw new AppError('El paciente está archivado', 409);
   }
 
-  // Determinar odontólogo responsable
   let odontologo = null;
   if (usuario?.id_odontologo) {
     odontologo = memoria.odontologos.find((o) => o.id === usuario.id_odontologo);
@@ -299,7 +243,7 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
     odontologo = memoria.odontologos.find((o) => o.id === d.extra.odontologo_id);
   }
   if (!odontologo) {
-    odontologo = memoria.odontologos[0]; // Por defecto: Dra. Carmen García
+    odontologo = memoria.odontologos[0];
   }
 
   const idAtencion = `hist_od_${Date.now()}`;
@@ -324,7 +268,7 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
     odontograma: d.extra?.odontograma || {},
   };
 
-  // Si trae cambios de odontograma, se actualiza el odontograma actual del paciente
+  // También actualiza el odontograma del paciente
   if (d.extra?.odontograma && typeof d.extra.odontograma === 'object') {
     paciente.odontograma_actual = {
       ...(paciente.odontograma_actual || {}),
@@ -348,11 +292,6 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
   return aAtencion(nuevaEntrada, memoria.odontologos);
 };
 
-/**
- * 8. Catálogos comunes y específicos de odontología
- * @param {string} tipo Nombre del catálogo ('tratamientos', 'odontologos', 'especialidades', 'medicamentos')
- * @returns {Promise<Array|null>}
- */
 const obtenerCatalogo = async (tipo) => {
   const norm = String(tipo || '').toLowerCase();
   if (!Object.hasOwn(CATALOGOS_ODONTOLOGIA, norm)) {

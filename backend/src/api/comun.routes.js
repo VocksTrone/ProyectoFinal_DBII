@@ -18,7 +18,6 @@ pacientesRoutes.get('/:id/historial', authorizeRoles('medico'), c.obtenerHistori
 pacientesRoutes.patch('/:id/archivar', c.archivarPaciente);
 pacientesRoutes.post('/:id/atenciones', authorizeRoles('medico'), c.registrarAtencion);
 
-// Catálogos
 const catalogosRoutes = Router();
 catalogosRoutes.use(authenticate, usarAdaptador);
 catalogosRoutes.get('/:tipo', c.obtenerCatalogo);

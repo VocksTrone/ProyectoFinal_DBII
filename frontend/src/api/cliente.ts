@@ -1,5 +1,3 @@
-// Cliente del API: agrega el token y convierte los errores en mensajes claros
-
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 export type DetalleError = { field?: string; message: string };
@@ -22,7 +20,7 @@ export const fijarToken = (nuevo: string | null) => {
   token = nuevo;
 };
 
-// Se llama cuando el backend responde 401 (token vencido o inválido)
+// Cuando el backend responde 401 (token vencido o inválido)
 export const alExpirarSesion = (fn: () => void) => {
   alExpirar = fn;
 };
@@ -57,7 +55,6 @@ export const api = {
   patch: <T>(ruta: string, cuerpo?: unknown) => pedir<T>("PATCH", ruta, cuerpo ?? {}),
 };
 
-// Texto legible de un error (incluye los campos inválidos)
 export const mensajeDeError = (error: unknown) => {
   if (error instanceof ApiError) {
     const campos = error.details

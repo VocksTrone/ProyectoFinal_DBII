@@ -3,7 +3,6 @@ import { api } from "../api/cliente";
 import type { Paciente } from "../api/tipos";
 import { Avatar, Cargando, Search, edad, formatoDpi } from "./componentes";
 
-// Busca y elige un paciente activo de la institución
 export default function SelectorPaciente({ onElegir }: { onElegir: (p: Paciente) => void }) {
   const [texto, setTexto] = useState("");
   const [resultados, setResultados] = useState<Paciente[] | null>(null);

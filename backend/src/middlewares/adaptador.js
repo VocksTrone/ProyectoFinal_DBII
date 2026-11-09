@@ -1,7 +1,6 @@
 const { obtenerAdaptador } = require('../adaptadores');
 const { AppError } = require('../utils/helpers');
 
-// Pone en req.adaptador el motor de la institución del usuario
 const usarAdaptador = (req, res, next) => {
   const adaptador = obtenerAdaptador(req.user.institucion);
 

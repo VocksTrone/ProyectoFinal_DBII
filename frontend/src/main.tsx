@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// index.css primero: es la base; extra.css y pantallas.css (en App) la ajustan
+// index.css va primero; extra.css y pantallas.css (en App) lo ajustan
 import './index.css'
 import App from './App'
 

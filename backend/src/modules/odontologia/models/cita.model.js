@@ -6,9 +6,6 @@ const { toTimestamp } = require('./paciente.model');
 const COLLECTION_NAME = 'citas';
 const ESTADOS_VALIDOS = ['Pendiente', 'Confirmada', 'Atendida', 'Cancelada'];
 
-/**
- * Validador estricto para el documento Cita
- */
 const validateCita = (data, isUpdate = false) => {
   if (!data || typeof data !== 'object') {
     throw new AppError('Los datos de la cita deben ser un objeto válido', 400);

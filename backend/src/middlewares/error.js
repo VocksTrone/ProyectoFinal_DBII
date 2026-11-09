@@ -18,7 +18,7 @@ const errorHandler = (err, req, res, next) => {
     message = 'Ya existe un registro con esos datos';
     details = err.errors ? err.errors.map((e) => ({ field: e.path, message: e.message })) : null;
   } else if (['23502', '23503', '23514', '22P02', '22007', '22008', '22001'].includes(codigoMotor)) {
-    // not null, llave foránea, check, formato, fecha inválida o texto muy largo en PostgreSQL
+    // not null, llave foránea, check, formato o texto muy largo
     statusCode = 400;
     message = 'Datos rechazados por la base de datos';
     details = [{ message: err.parent?.detail || err.original?.detail || err.message }];

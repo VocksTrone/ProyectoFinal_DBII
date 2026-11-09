@@ -1,7 +1,3 @@
-// =====================================================================
-// Controlador del Centro Médico Pediátrico
-// =====================================================================
-
 const pediatria = require('../../../adaptadores/mysql/pediatria');
 const { obtenerAdaptador } = require('../../../adaptadores');
 const { validar, texto, esNumero } = require('../../../core/validaciones');
@@ -21,7 +17,6 @@ class PediatriaController {
     }, 'Información del módulo Centro Médico Pediátrico');
   });
 
-  // ---------- Tutores / Encargados ----------
 
   listarTutores = asyncHandler(async (req, res) => {
     const tutores = await pediatria.listarTutores(req.query.buscar);
@@ -47,7 +42,6 @@ class PediatriaController {
     return sendSuccess(res, nuevoTutor, 'Tutor registrado con éxito', 201);
   });
 
-  // ---------- Controles de crecimiento y desarrollo ----------
 
   obtenerControles = asyncHandler(async (req, res) => {
     idValido(req.params.id, 'Paciente');
@@ -70,7 +64,6 @@ class PediatriaController {
     return sendSuccess(res, control, 'Control de crecimiento registrado con éxito', 201);
   });
 
-  // ---------- Vacunación ----------
 
   listarVacunas = asyncHandler(async (req, res) => {
     const vacunas = await pediatria.listarVacunas();
@@ -95,7 +88,6 @@ class PediatriaController {
     return sendSuccess(res, registro, 'Dosis de vacuna registrada con éxito', 201);
   });
 
-  // ---------- Compatibilidad / Rutas adicionales ----------
 
   getPacientes = asyncHandler(async (req, res) => {
     const adp = obtenerAdaptador('pediatria');

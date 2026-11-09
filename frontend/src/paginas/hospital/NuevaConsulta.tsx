@@ -43,13 +43,11 @@ export default function NuevaConsulta({ idPaciente, idCitaInicial }: { idPacient
 
   if (paciente.estado === "archivado") return <section className="card"><EmptyState title="Historial archivado" description="No se pueden registrar consultas a un paciente archivado." action={<Button variant="secondary" onClick={() => ir("historial", idPaciente)}>Volver al historial</Button>} /></section>;
 
-  // ---------- Edición de listas ----------
   const cambiarDx = (i: number, cambios: Partial<Diagnostico>) => setDiagnosticos(diagnosticos.map((d, j) => (j === i ? { ...d, ...cambios } : d)));
   const cambiarTx = (i: number, k: number, cambios: Record<string, unknown>) =>
     cambiarDx(i, { tratamientos: diagnosticos[i].tratamientos.map((t, j) => (j === k ? { ...t, ...cambios } : t)) });
   const cambiarMed = (i: number, cambios: Partial<MedicamentoRecetado>) => setMedicamentos(medicamentos.map((m, j) => (j === i ? { ...m, ...cambios } : m)));
 
-  // ---------- Validación por paso ----------
   const validarPaso = () => {
     if (paso === 1 && !motivo.trim()) return "Escribe el motivo de la consulta.";
     if (paso === 2 && diagnosticos.some((d) => !d.nombre.trim())) return "Cada diagnóstico necesita un nombre (o quítalo).";
@@ -89,7 +87,6 @@ export default function NuevaConsulta({ idPaciente, idCitaInicial }: { idPacient
     }
   };
 
-  // ---------- Resultado ----------
   if (guardada) return <section className="card success-state"><div><Icon name="check" size={35} /></div><h1>Consulta guardada</h1>
     <p>Se registró en una sola transacción: {guardada.diagnosticos.length} diagnóstico(s){guardada.receta ? ` y la receta ${guardada.receta.codigo}` : ""} en el historial de {nombre}.</p>
     <div className="success-actions"><Button variant="secondary" onClick={() => ir("inicio")}>Volver al inicio</Button><Button icon="file" onClick={() => ir("historial", idPaciente)}>Ver historial</Button></div>

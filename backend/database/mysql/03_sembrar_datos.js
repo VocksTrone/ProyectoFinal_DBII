@@ -1,8 +1,3 @@
-// =====================================================================
-// Script de inicialización y siembra de datos para Centro Médico Pediátrico (MySQL)
-// Uso desde backend/: node database/mysql/03_sembrar_datos.js
-// =====================================================================
-
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2/promise');

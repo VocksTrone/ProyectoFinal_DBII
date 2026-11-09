@@ -1,4 +1,3 @@
-// Modelos del Laboratorio Clínico (MongoDB)
 const { mongoose } = require('../../config/mongodb');
 const { Schema } = mongoose;
 

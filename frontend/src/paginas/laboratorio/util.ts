@@ -1,5 +1,3 @@
-// Utilidades del Laboratorio
-
 export const ESTADO_ORDEN: Record<string, { clase: string; texto: string }> = {
   pendiente: { clase: "recibida", texto: "Pendiente" },
   en_proceso: { clase: "en-proceso", texto: "En proceso" },
@@ -27,7 +25,7 @@ export const fueraDeRango = (valor: string | number | undefined, rango: string):
   const limite = r.match(/^([<>])\s*(-?[\d.]+)$/);
   if (limite && v !== null) return limite[1] === "<" ? v >= Number(limite[2]) : v <= Number(limite[2]);
 
-  // Rangos de texto (ej. "Negativo"); los que tienen opciones no se evalúan
+  // Rangos de texto como "Negativo"; los que traen opciones no se evalúan
   if (!/[\d/]/.test(r) && v === null) return String(valor).trim().toLowerCase() !== r.toLowerCase();
   return null;
 };

@@ -1,11 +1,9 @@
-// Utilidades compartidas del adaptador MongoDB
 const { mongoose } = require('../../config/mongodb');
 
 const vacio = (v) => (v === undefined || v === null || v === '' ? undefined : v);
 const esId = (id) => /^[a-f0-9]{24}$/i.test(String(id));
 const soloFecha = (d) => (d ? new Date(d).toISOString().slice(0, 10) : null);
 
-// Ejecuta fn dentro de una transacción: todo o nada
 const enTransaccion = async (fn) => {
   const session = await mongoose.startSession();
   try {
@@ -19,7 +17,6 @@ const enTransaccion = async (fn) => {
   }
 };
 
-// Documento -> formato del contrato
 const aPaciente = (p) => ({
   id: String(p._id),
   dpi: p.dpi || null,
@@ -38,7 +35,7 @@ const aPaciente = (p) => ({
   },
 });
 
-// Orden de examen -> atención del contrato
+// En el laboratorio una atención es una orden de examen
 const aAtencion = (o) => ({
   id: String(o._id),
   fecha: new Date(o.fecha_ingreso).toISOString(),
@@ -67,7 +64,6 @@ const aAtencion = (o) => ({
   },
 });
 
-// Examen del catálogo -> examen pendiente dentro de la orden
 const nuevoExamen = (e) => ({
   codigo_examen: e.codigo,
   tipo_examen: e.nombre,

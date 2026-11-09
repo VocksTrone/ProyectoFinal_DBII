@@ -1,9 +1,3 @@
-// =====================================================================
-// Utilidades y almacén de datos del adaptador Firebase (Clínica Odontológica)
-// Implementa el contrato común de la API para persistencia en Firestore
-// con sincronización transparente y respaldo resiliente.
-// =====================================================================
-
 const { AppError } = require('../../utils/helpers');
 
 const vacio = (v) => (v === undefined || v === null || v === '' ? null : v);
@@ -25,7 +19,7 @@ const aFecha = (v) => {
   return String(v).slice(0, 10);
 };
 
-// Convierte un documento o registro al formato de Paciente del contrato de la API
+// Documento de Firestore -> paciente del contrato
 const aPaciente = (p) => {
   if (!p) return null;
 
@@ -70,7 +64,7 @@ const aPaciente = (p) => {
   };
 };
 
-// Convierte un registro del historial odontológico al formato de Atención del contrato
+// Registro del historial -> atención del contrato
 const aAtencion = (entry, odontologos = []) => {
   const profesionalObj = odontologos.find((o) => o.id === entry.odontologo_id);
   const nombreProfesional = entry.profesional || (profesionalObj ? profesionalObj.nombre_completo : 'Dra. Carmen García');
@@ -116,11 +110,6 @@ const aAtencion = (entry, odontologos = []) => {
   };
 };
 
-// =====================================================================
-// Almacén de usuarios institucionales de la Clínica Odontológica
-// Contraseña unificada: Odontologia2026!
-// Hash bcrypt pregenerado: $2b$10$ldY9FVamybYHQqzgHq9/6eCvDOhpXS7wIy6UkfAL.NF31rEdGYRkm
-// =====================================================================
 const HASH_ODONTOLOGIA = '$2b$10$ldY9FVamybYHQqzgHq9/6eCvDOhpXS7wIy6UkfAL.NF31rEdGYRkm';
 
 const USUARIOS_INICIALES = [

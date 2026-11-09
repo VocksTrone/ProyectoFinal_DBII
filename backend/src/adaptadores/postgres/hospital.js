@@ -1,9 +1,6 @@
-// Funciones propias del Hospital General (PostgreSQL)
 const { pgPool } = require('../../config/postgres');
 const { AppError } = require('../../utils/helpers');
 const { AHORA, vacio, esId, enTransaccion, medicoDeUsuario, bloquearPacienteActivo } = require('./comun');
-
-// ---------- Citas ----------
 
 const SELECT_CITA = `
   select ci.id_cita, ci.id_paciente, ci.id_medico, ci.fecha, to_char(ci.hora, 'HH24:MI') as hora, ci.estado,
@@ -58,7 +55,7 @@ const noEsPasada = async (db, fecha) => {
   if (rows[0].pasada) throw new AppError('La fecha no puede ser pasada', 400);
 };
 
-// Choque con unique (id_medico, fecha, hora)
+// Choca con unique (id_medico, fecha, hora)
 const horarioOcupado = (error) => {
   if (error.code === '23505') throw new AppError('El médico ya tiene una cita en ese horario', 409);
   throw error;
@@ -81,7 +78,6 @@ const agendarCita = async ({ id_paciente, id_medico, fecha, hora }) => {
   return obtenerCita(id);
 };
 
-// Solo se modifica si sigue programada
 const bloquearCitaProgramada = async (db, id) => {
   const { rows } = await db.query('select estado from hospital_general.cita where id_cita = $1 for update', [id]);
   if (!rows[0]) throw new AppError('Cita no encontrada', 404);
@@ -107,8 +103,6 @@ const cancelarCita = async (id) => {
   return obtenerCita(id);
 };
 
-// ---------- Antecedentes ----------
-
 const agregarAntecedente = async (idPaciente, { tipo, descripcion }) =>
   enTransaccion(async (db) => {
     await bloquearPacienteActivo(db, idPaciente);
@@ -120,8 +114,6 @@ const agregarAntecedente = async (idPaciente, { tipo, descripcion }) =>
     const a = rows[0];
     return { id: String(a.id_antecedente), tipo: a.tipo, descripcion: a.descripcion, fecha: a.fecha };
   });
-
-// ---------- Internamientos ----------
 
 const SELECT_INTERNAMIENTO = `
   select i.*, p.nombres || ' ' || p.apellidos as paciente, m.nombres || ' ' || m.apellidos as medico
@@ -248,7 +240,7 @@ const agregarDieta = async (id, { id_tipo_dieta, fecha_inicio, fecha_fin, observ
   return obtenerInternamiento(id);
 };
 
-// Alta: cierra el internamiento y sus medicamentos y dietas abiertos
+// El alta también cierra los medicamentos y dietas que sigan abiertos
 const darAlta = async (id) => {
   await enTransaccion(async (db) => {
     await bloquearInternamientoActivo(db, id);

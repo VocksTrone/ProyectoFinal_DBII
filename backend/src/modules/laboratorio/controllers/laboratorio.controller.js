@@ -6,7 +6,7 @@ const { asyncHandler, sendSuccess, AppError } = require('../../../utils/helpers'
 
 const ESTADOS = ['pendiente', 'en_proceso', 'completada', 'cancelada'];
 
-// La secretaria ve la orden, pero no los valores (información restringida)
+// La secretaria ve la orden pero no los valores
 const sinValores = (orden) => ({
   ...orden,
   extra: {
@@ -25,7 +25,7 @@ class LaboratorioController {
     return sendSuccess(res, data, 'Órdenes obtenidas');
   });
 
-  // Recepción: la secretaria también crea órdenes (usa la misma regla común)
+  // En recepción la secretaria también crea órdenes
   crearOrden = asyncHandler(async (req, res) => {
     const b = req.body;
     validar([

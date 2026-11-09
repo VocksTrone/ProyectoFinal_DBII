@@ -1,16 +1,11 @@
-/* =====================================================================
-   Estilos de pantallas (rediseño visual)
-   Usa las variables definidas al inicio de index.css
-   ===================================================================== */
-
-/* Colores de cada institución fuera del marco (login y etiquetas) */
+/* Colores de cada institución (login y etiquetas) */
 [data-inst="hospital"] { --c: #3b8ad4; --c-texto: #1a5d96; --c-suave: #e7f0f9; }
 [data-inst="laboratorio"] { --c: #9370d6; --c-texto: #5d3a99; --c-suave: #f1ecf9; }
 [data-inst="pediatria"] { --c: #e69a4c; --c-texto: #a35c12; --c-suave: #fdf1e3; }
 [data-inst="odontologia"] { --c: #d9668d; --c-texto: #a3335a; --c-suave: #fbeaf0; }
 
-/* ---------- Login ---------- */
-/* Panel verde: lista compacta de instituciones */
+/* Login */
+/* Panel verde */
 .login-instituciones { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; margin-top: 26px; max-width: 520px; }
 .login-inst { display: flex; align-items: center; gap: 9px; padding: 7px 0; border-bottom: 1px solid #ffffff14; }
 .login-inst-icono { width: 24px; height: 24px; border-radius: var(--radio-sm); display: grid; place-items: center; background: var(--c); color: #fff; flex: none; }
@@ -20,7 +15,7 @@
 .login-form-panel { overflow-y: auto; }
 .detected[data-inst] { border-color: var(--c-suave); background: var(--c-suave); color: var(--c-texto); }
 
-/* Usuarios de prueba: una línea por institución con botones pequeños */
+/* Usuarios de prueba */
 .demo-grupos { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--borde-suave); display: flex; flex-direction: column; gap: 2px; }
 .demo-grupos-titulo { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
 .demo-grupos-titulo span { font-size: 12px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--texto-tenue); }
@@ -33,10 +28,10 @@
 .demo-fila-botones button:hover { border-color: var(--c-texto); color: var(--c-texto); }
 .demo-fila-botones button.active { background: var(--c-suave); border-color: var(--c-texto); color: var(--c-texto); }
 
-/* ---------- Tarjetas ---------- */
+/* Tarjetas */
 .card { border-color: var(--borde); border-radius: var(--radio-lg); box-shadow: var(--sombra-sm); }
 
-/* ---------- Inicio: tarjetas de resumen ---------- */
+/* Inicio */
 .stats-grid { gap: 18px; margin-bottom: 20px; }
 .stat-card { padding: 20px 22px; gap: 16px; min-height: 124px; border-radius: var(--radio-lg); box-shadow: var(--sombra-sm); transition: box-shadow .15s, transform .15s; }
 .stat-card:hover { box-shadow: var(--sombra); transform: translateY(-1px); }
@@ -55,7 +50,7 @@
 .appointment-info strong { font-size: 14px; }
 .appointment-info span { font-size: 13px; }
 
-/* ---------- Historial: ficha del paciente ---------- */
+/* Historial */
 .ficha { padding: 22px 24px; margin-bottom: 18px; }
 .ficha-top { display: flex; align-items: center; gap: 18px; }
 .ficha .patient-avatar { width: 64px; height: 64px; border-radius: var(--radio-xl); font-size: 20px; flex: none; }
@@ -80,13 +75,13 @@
 .alerta-internado > svg:last-child { margin-left: auto; }
 .alerta-archivado { background: #eef1f3; border-color: var(--borde-fuerte); color: var(--texto-2); }
 
-/* ---------- Pestañas ---------- */
+/* Pestañas */
 .tabs { gap: 2px; margin-bottom: 20px; }
 .tabs button { padding: 12px 16px; border-radius: var(--radio) var(--radio) 0 0; border-bottom-width: 3px; color: var(--texto-tenue); transition: color .15s, background .15s; }
 .tabs button:hover { color: var(--texto); background: #ffffffb3; }
 .tabs button.active { background: var(--superficie); font-weight: 700; }
 
-/* ---------- Tablas ---------- */
+/* Tablas */
 th { font-size: 12px; font-weight: 700; letter-spacing: .6px; color: var(--texto-tenue); background: var(--fondo); padding: 12px 20px; }
 td { font-size: 14px; color: var(--texto-2); padding: 14px 20px; }
 td:first-child strong { font-size: 14px; color: var(--texto); }
@@ -97,7 +92,7 @@ tbody tr:hover { background: var(--acento-suave); }
 .table-tools { padding: 16px 20px; }
 .pagination { font-size: 13px; color: var(--texto-tenue); }
 
-/* ---------- Etiquetas de estado ---------- */
+/* Etiquetas de estado */
 .status, .lab-status, .admission-status { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; gap: 6px; }
 .status { background: var(--exito-suave); color: var(--exito); }
 .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -105,7 +100,7 @@ tbody tr:hover { background: var(--acento-suave); }
 .status.pendiente, .status.en-espera { background: var(--aviso-suave); color: var(--aviso); }
 .lab-status { display: inline-flex; align-items: center; }
 
-/* ---------- Foco visible al navegar con teclado ---------- */
+/* Foco con teclado */
 :where(button, a, [tabindex], summary):focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
 .btn:focus-visible { outline-offset: 3px; }
 tr[tabindex]:focus-visible { outline: 3px solid var(--acento); outline-offset: -3px; background: var(--acento-suave); }
@@ -113,7 +108,7 @@ tr[tabindex]:focus-visible { outline: 3px solid var(--acento); outline-offset: -
 .field input:focus, .field select:focus, .field textarea:focus, .search:focus-within { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
 .login-page .field input:focus { border-color: var(--primario); box-shadow: 0 0 0 3px var(--primario-suave); }
 
-/* ---------- Transiciones suaves ---------- */
+/* Transiciones */
 .btn { transition: background .15s, border-color .15s, box-shadow .15s, transform .1s; }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn-secondary:hover:not(:disabled) { background: var(--fondo); border-color: var(--borde-fuerte); }
@@ -128,36 +123,35 @@ tr[tabindex]:focus-visible { outline: 3px solid var(--acento); outline-offset: -
 @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
 @keyframes subir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-/* Respeta la opción del sistema "reducir movimiento" */
+/* Si el sistema pide reducir movimiento */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
-/* ---------- Paginación: la flecha "anterior" apunta a la izquierda ---------- */
+/* Paginación */
 .pagination button:first-child svg { transform: rotate(180deg); }
 .pagination button:last-child svg { transform: none; }
 
-/* ---------- Tablet ---------- */
+/* Tablet */
 .ficha-top { flex-wrap: wrap; }
 .ficha-datos { flex: 1 1 300px; }
 @media (max-width: 1200px) {
-  /* Los botones bajan debajo del nombre en lugar de aplastarlo */
+  /* Los botones bajan para no aplastar el nombre */
   .ficha .patient-actions { width: 100%; justify-content: flex-start; padding-left: 82px; }
 }
 @media (max-width: 1000px) and (min-width: 600px) {
-  /* Las 3 tarjetas de resumen siguen en una fila, más compactas */
   .stats-grid, .stats-grid.lab-stats { grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .stat-card { flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; min-height: 0; }
   .stat-card > div:nth-child(2) > strong { font-size: 28px; }
 }
 @media (max-width: 900px) {
-  /* En la barra superior cabe el nombre de la institución */
+  /* En la barra superior sí cabe el nombre de la institución */
   .institution span, .institution i, .institution small { display: inline; }
   .institution i { display: inline-block; }
   .ficha .patient-actions { padding-left: 0; }
 }
 
-/* ---------- Laboratorio ---------- */
+/* Laboratorio */
 .exam-switch { flex-wrap: wrap; gap: 8px; }
 .exam-switch button { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; padding: 9px 14px; transition: background .15s, border-color .15s; }
 .exam-switch button.active { background: var(--acento-suave); color: var(--acento-texto); border-color: var(--acento-borde, var(--borde-fuerte)); }

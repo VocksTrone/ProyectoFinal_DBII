@@ -4,9 +4,6 @@ const { AppError } = require('../../../utils/helpers');
 
 const COLLECTION_NAME = 'pacientes';
 
-/**
- * Normaliza cualquier entrada de fecha/timestamp a Firestore Timestamp
- */
 const toTimestamp = (dateVal) => {
   if (!dateVal) return Timestamp.now();
   if (dateVal instanceof Timestamp) return dateVal;
@@ -24,9 +21,6 @@ const toTimestamp = (dateVal) => {
   return Timestamp.now();
 };
 
-/**
- * Validador para subdocumento de historial odontológico
- */
 const validateHistorialEntry = (entry) => {
   if (!entry || typeof entry !== 'object') {
     throw new AppError('La entrada de historial odontológico debe ser un objeto válido', 400);
@@ -54,9 +48,6 @@ const validateHistorialEntry = (entry) => {
   };
 };
 
-/**
- * Validador estricto para el documento Paciente
- */
 const validatePaciente = (data, isUpdate = false) => {
   if (!data || typeof data !== 'object') {
     throw new AppError('Los datos del paciente deben ser un objeto válido', 400);
@@ -74,7 +65,6 @@ const validatePaciente = (data, isUpdate = false) => {
     }
   }
 
-  // Validación de objeto "contacto"
   const contacto = {};
   if (data.contacto) {
     if (typeof data.contacto !== 'object' || Array.isArray(data.contacto)) {
@@ -87,7 +77,6 @@ const validatePaciente = (data, isUpdate = false) => {
     contacto.correo = '';
   }
 
-  // Validación de objeto "contacto_emergencia"
   const contactoEmergencia = {};
   if (data.contacto_emergencia) {
     if (typeof data.contacto_emergencia !== 'object' || Array.isArray(data.contacto_emergencia)) {
@@ -100,7 +89,6 @@ const validatePaciente = (data, isUpdate = false) => {
     contactoEmergencia.telefono = '';
   }
 
-  // Validación de Array "historial_odontologico"
   let historial = [];
   if (data.historial_odontologico !== undefined) {
     if (!Array.isArray(data.historial_odontologico)) {
@@ -119,9 +107,6 @@ const validatePaciente = (data, isUpdate = false) => {
   return sanitized;
 };
 
-/**
- * Convierte un documento de Firestore a JSON plano formateando los Timestamps
- */
 const formatDoc = (doc) => {
   if (!doc.exists) return null;
   const data = doc.data();
@@ -192,9 +177,6 @@ class PacienteModel {
     return formatDoc(updatedDoc);
   }
 
-  /**
-   * Agrega un nuevo subdocumento al array de historial_odontologico atómicamente
-   */
   static async addHistorialEntry(id, entry) {
     if (!id) throw new AppError('ID de paciente requerido', 400);
     const validatedEntry = validateHistorialEntry(entry);

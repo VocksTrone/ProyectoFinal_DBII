@@ -6,7 +6,7 @@ import { useSesion } from "../sesion";
 import { Button, Field, Icon, IconName } from "../ui/componentes";
 import { Logo } from "./Marco";
 
-// Usuarios de los datos de prueba (database/postgres, database/mongodb y database/mysql)
+// Usuarios de los datos de prueba
 const USUARIOS_PRUEBA: { usuario: string; password: string; rol: string; institucion: Institucion }[] = [
   { usuario: "rdiaz@hospital", password: "Hospital2026!", rol: "Médico", institucion: "hospital" },
   { usuario: "lmendez@hospital", password: "Hospital2026!", rol: "Secretaria", institucion: "hospital" },
@@ -18,7 +18,6 @@ const USUARIOS_PRUEBA: { usuario: string; password: string; rol: string; institu
   { usuario: "mramirez@odontologia", password: "Odontologia2026!", rol: "Secretaria", institucion: "odontologia" },
 ];
 
-// Cómo modela sus datos cada institución (se muestra en el panel izquierdo)
 const DESCRIPCION: Record<Institucion, { icono: IconName; modelo: string }> = {
   hospital: { icono: "heart", modelo: "Relacional · transacciones estrictas" },
   laboratorio: { icono: "flask", modelo: "Documental · resultados dinámicos" },

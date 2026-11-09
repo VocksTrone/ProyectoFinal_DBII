@@ -1,7 +1,3 @@
-// =====================================================================
-// Utilidades compartidas del adaptador MySQL (Centro Médico Pediátrico)
-// =====================================================================
-
 const { mysqlPool } = require('../../config/mysql');
 const { AppError } = require('../../utils/helpers');
 
@@ -14,7 +10,6 @@ const aFecha = (v) => {
   return String(v).slice(0, 10);
 };
 
-// Ejecuta una función dentro de una transacción en MySQL
 const enTransaccion = async (fn) => {
   const conn = await mysqlPool.getConnection();
   try {
@@ -30,7 +25,6 @@ const enTransaccion = async (fn) => {
   }
 };
 
-// Obtiene el id_medico del usuario en sesión
 const medicoDeUsuario = async (conn, usuario) => {
   const [rows] = await conn.query('SELECT id_medico FROM usuario WHERE id_usuario = ?', [usuario.id]);
   if (!rows[0]?.id_medico) {
@@ -39,7 +33,7 @@ const medicoDeUsuario = async (conn, usuario) => {
   return rows[0].id_medico;
 };
 
-// Bloquea al paciente para transacciones concurrentes y verifica estado activo
+// FOR UPDATE: nadie puede archivarlo mientras dura la transacción
 const bloquearPacienteActivo = async (conn, idPaciente) => {
   const [rows] = await conn.query(
     'SELECT estado FROM paciente WHERE id_paciente = ? FOR UPDATE',
@@ -49,7 +43,6 @@ const bloquearPacienteActivo = async (conn, idPaciente) => {
   if (rows[0].estado !== 'activo') throw new AppError('El paciente está archivado', 409);
 };
 
-// Transforma la fila de base de datos al formato estándar del contrato de la API
 const aPaciente = (f) => ({
   id: String(f.id_paciente),
   dpi: f.dpi || null,

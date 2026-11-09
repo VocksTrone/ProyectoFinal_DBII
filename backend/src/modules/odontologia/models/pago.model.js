@@ -8,9 +8,6 @@ const COLLECTION_NAME = 'pagos';
 const ESTADOS_PAGO = ['Completado', 'Pendiente', 'Parcial'];
 const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia'];
 
-/**
- * Validador para subdocumento de método en desglose_pago (soporte de pagos mixtos)
- */
 const validateDesgloseItem = (item, index = 0) => {
   if (!item || typeof item !== 'object') {
     throw new AppError(`desglose_pago[${index}]: Debe ser un objeto válido`, 400);
@@ -39,9 +36,6 @@ const validateDesgloseItem = (item, index = 0) => {
   };
 };
 
-/**
- * Validador y calculador de honorarios médicos
- */
 const validateHonorariosMedicos = (honorarios, totalAtencion) => {
   if (!honorarios || typeof honorarios !== 'object' || Array.isArray(honorarios)) {
     throw new AppError('El campo "honorarios_medicos" debe ser un Map/Subdocumento con odontologo_id y porcentaje_honorario', 400);
@@ -56,7 +50,7 @@ const validateHonorariosMedicos = (honorarios, totalAtencion) => {
     throw new AppError('honorarios_medicos.porcentaje_honorario debe ser un número entre 0 y 100 (Ej. 40)', 400);
   }
 
-  // Cálculo automático del monto del honorario basado en total_atencion
+  // El honorario se calcula sobre total_atencion
   const montoCalculado = Number(((totalAtencion * porcentaje) / 100).toFixed(2));
 
   return {
@@ -66,9 +60,6 @@ const validateHonorariosMedicos = (honorarios, totalAtencion) => {
   };
 };
 
-/**
- * Validador estricto para la colección "pagos"
- */
 const validatePago = (data, isUpdate = false) => {
   if (!data || typeof data !== 'object') {
     throw new AppError('Los datos del pago deben ser un objeto válido', 400);
@@ -104,7 +95,7 @@ const validatePago = (data, isUpdate = false) => {
 
   const totalAtencion = data.total_atencion !== undefined ? Number(Number(data.total_atencion).toFixed(2)) : undefined;
 
-  // Validación de desglose_pago (soporta pagos mixtos: Efectivo + Tarjeta + Transferencia)
+  // Pagos mixtos: efectivo, tarjeta y transferencia
   let desglose = [];
   if (data.desglose_pago !== undefined) {
     if (!Array.isArray(data.desglose_pago)) {
@@ -115,7 +106,7 @@ const validatePago = (data, isUpdate = false) => {
 
   const estado = data.estado_pago || (!isUpdate ? 'Completado' : undefined);
 
-  // Validación de consistencia financiera entre desglose y total_atencion
+  // El desglose tiene que sumar el total
   if (totalAtencion !== undefined && desglose.length > 0 && estado) {
     const totalPagadoDesglose = Number(
       desglose.reduce((sum, item) => sum + item.monto, 0).toFixed(2)
@@ -136,7 +127,6 @@ const validatePago = (data, isUpdate = false) => {
     }
   }
 
-  // Validación y cálculo de honorarios médicos
   let honorarios = undefined;
   if (data.honorarios_medicos !== undefined) {
     const baseTotal = totalAtencion !== undefined ? totalAtencion : (data.total_atencion || 0);

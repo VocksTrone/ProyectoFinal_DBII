@@ -1,19 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
-/* ---------- Variables de diseño ---------- */
+/* Variables de diseño */
 :root {
   /* Marca */
   --primario: #087b78;
   --primario-oscuro: #066a68;
   --primario-suave: #e8f4f2;
 
-  /* Acento de la institución (se cambia según el usuario, ver "Acentos por institución") */
+  /* Acento de la institución; cambia con .app-shell[data-institucion] */
   --acento: var(--primario);
   --acento-texto: #08716f;
   --acento-suave: var(--primario-suave);
 
-  /* Texto: contraste mínimo 5.7:1 sobre blanco */
+  /* Texto (contraste mínimo 5.7:1 sobre blanco) */
   --texto: #16212c;
   --texto-2: #3f4c57;
   --texto-tenue: #5b6872;
@@ -202,7 +202,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 @media(max-width:740px){.admission-detail-head{align-items:flex-start;flex-wrap:wrap}.admission-detail-head>div{flex-basis:100%}.general-admission dl{grid-template-columns:1fr 1fr}.invoice-list{display:block}.split-payment{grid-template-columns:1fr}.billing-grid .table-scroll table{min-width:620px}}
 @media print{body{background:#fff}.sidebar,.topbar,.back-link,.page-heading,.tabs,.report-actions{display:none!important}.app-main{margin:0}.content{padding:0;max-width:none}.lab-report{border:0;box-shadow:none;max-width:none;margin:0;padding:20px}.lab-report .brand{display:flex!important}@page{margin:12mm}}
 
-/* ---------- Jerarquía de títulos ---------- */
+/* Jerarquía de títulos */
 .page-heading h1 { font-size: 28px; letter-spacing: -.6px; }
 .page-heading > div > span { font-size: 15px; }
 .card-header h2 { font-size: 17px; letter-spacing: -.2px; }
@@ -210,7 +210,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .tabs button { font-size: 15px; }
 .nav-item { color: var(--texto-2); }
 
-/* ---------- Acentos por institución ---------- */
+/* Acentos por institución */
 .app-shell[data-institucion="hospital"] { --acento: #1f6fb2; --acento-texto: #1a5d96; --acento-suave: #e7f0f9; --acento-borde: #c5daee; }
 .app-shell[data-institucion="laboratorio"] { --acento: #7048b0; --acento-texto: #5d3a99; --acento-suave: #f1ecf9; --acento-borde: #d9cdee; }
 .app-shell[data-institucion="pediatria"] { --acento: #d9822b; --acento-texto: #a35c12; --acento-suave: #fdf1e3; --acento-borde: #f2d3ae; }
@@ -228,8 +228,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .help-icon { color: var(--acento); background: var(--superficie); }
 .avatar.doctor { color: var(--acento-texto); background: var(--acento-suave); }
 
-/* ---------- Ajustes tras revisar capturas ---------- */
-/* Tailwind quita el grosor a los títulos: se restaura */
+/* Tailwind les quita el grosor a los títulos */
 h1, h2, h3 { font-weight: 700; }
 .card-header h2 { font-weight: 700; }
 .patient-main { flex: 1; min-width: 0; }

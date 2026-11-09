@@ -4,13 +4,11 @@ const { asyncHandler, sendSuccess, AppError } = require('../../../utils/helpers'
 
 const ESTADOS_INTERNAMIENTO = ['activo', 'dado de alta', 'todos'];
 
-// El id de la URL debe ser numérico
 const idValido = (id, nombre) => {
   if (!esNumero(id)) throw new AppError(`${nombre} no encontrado`, 404);
 };
 
 class HospitalController {
-  // ---------- Citas ----------
 
   listarCitas = asyncHandler(async (req, res) => {
     const q = req.query;
@@ -47,16 +45,12 @@ class HospitalController {
     return sendSuccess(res, await hospital.cancelarCita(req.params.id), 'Cita cancelada');
   });
 
-  // ---------- Antecedentes ----------
-
   agregarAntecedente = asyncHandler(async (req, res) => {
     idValido(req.params.id, 'Paciente');
     validar([[texto(req.body.tipo), 'tipo', 'Es obligatorio (alergia, enfermedad crónica, cirugía...)']]);
     const data = await hospital.agregarAntecedente(req.params.id, req.body);
     return sendSuccess(res, data, 'Antecedente registrado', 201);
   });
-
-  // ---------- Internamientos ----------
 
   listarInternamientos = asyncHandler(async (req, res) => {
     const estado = req.query.estado || 'activo';
@@ -67,7 +61,7 @@ class HospitalController {
   obtenerInternamiento = asyncHandler(async (req, res) => {
     const data = await hospital.obtenerInternamiento(req.params.id);
     if (!data) throw new AppError('Internamiento no encontrado', 404);
-    // Prescripciones = información restringida (solo médicos)
+    // Las prescripciones son información restringida
     if (req.user.rol !== 'medico') data.medicamentos = null;
     return sendSuccess(res, data, 'Internamiento obtenido');
   });

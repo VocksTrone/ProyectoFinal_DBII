@@ -69,8 +69,6 @@ export default function Agenda() {
   </div>;
 }
 
-// ---------- Nueva cita ----------
-
 export function NuevaCitaModal({ fechaInicial, medicos, paciente: pacienteFijo, cerrar, listo }: {
   fechaInicial: string;
   medicos: ItemCatalogo[];
@@ -106,8 +104,6 @@ export function NuevaCitaModal({ fechaInicial, medicos, paciente: pacienteFijo, 
     <p className="hint">El sistema no permite dos citas del mismo médico a la misma hora.</p>
   </Modal>;
 }
-
-// ---------- Detalle / reprogramar / cancelar ----------
 
 function DetalleCitaModal({ cita, cerrar, cambio }: { cita: Cita; cerrar: () => void; cambio: () => void }) {
   const usuario = useUsuario();

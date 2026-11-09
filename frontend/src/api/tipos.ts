@@ -1,4 +1,4 @@
-// Formatos del contrato común (docs/contrato-api.md)
+// Tipos del contrato común (docs/contrato-api.md)
 
 export type Institucion = "hospital" | "laboratorio" | "pediatria" | "odontologia";
 export type Rol = "medico" | "secretaria";

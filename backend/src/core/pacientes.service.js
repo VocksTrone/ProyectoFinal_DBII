@@ -1,7 +1,7 @@
 const { AppError } = require('../utils/helpers');
 const { validarPaciente, validarAtencion } = require('./validaciones');
 
-// Reglas de negocio comunes. Recibe el adaptador del motor, nunca lo importa.
+// Reglas comunes a todos los motores; recibe el adaptador en vez de importarlo
 class PacientesService {
   async buscar(adaptador, texto = '') {
     return adaptador.buscarPacientes(String(texto).trim());

@@ -1,8 +1,6 @@
 import { createContext, FormEvent, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { mensajeDeError } from "../api/cliente";
 
-// ---------- Íconos ----------
-
 export type IconName =
   | "home" | "users" | "calendar" | "logout" | "search" | "plus" | "clock" | "chevron" | "bell" | "file"
   | "heart" | "archive" | "arrow" | "check" | "shield" | "droplet" | "activity" | "more" | "filter"
@@ -39,8 +37,6 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-// ---------- Controles ----------
-
 export function Button({ children, variant = "primary", icon, onClick, type = "button", disabled }: {
   children: ReactNode;
   variant?: "primary" | "secondary" | "danger" | "ghost";
@@ -68,7 +64,7 @@ export function Avatar({ nombre, className = "" }: { nombre: string; className?:
   return <div className={`avatar ${colorDe(nombre)} ${className}`}>{iniciales(nombre)}</div>;
 }
 
-// Fila de tabla que se abre con clic o con Enter/Espacio (accesible con teclado)
+// Fila que también se abre con Enter o Espacio
 export const filaClic = (abrir: () => void) => ({
   onClick: abrir,
   tabIndex: 0,
@@ -80,8 +76,6 @@ export const filaClic = (abrir: () => void) => ({
     }
   },
 });
-
-// ---------- Estados de pantalla ----------
 
 export function Cargando({ texto = "Cargando..." }: { texto?: string }) {
   return <div className="loading-state"><span className="spinner" />{texto}</div>;
@@ -98,8 +92,6 @@ export function Restricted({ texto = "Tu rol no tiene permisos para consultar in
 export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
   return <div className="empty-state"><div><Icon name="file" size={27} /></div><h2>{title}</h2><p>{description}</p>{action}</div>;
 }
-
-// ---------- Modal ----------
 
 export function Modal({ titulo, descripcion, icono, peligro, cerrar, onSubmit, children, acciones }: {
   titulo: string;
@@ -122,8 +114,6 @@ export function Modal({ titulo, descripcion, icono, peligro, cerrar, onSubmit, c
   </form></div>;
 }
 
-// ---------- Avisos (toast) ----------
-
 type Aviso = { tipo: "ok" | "error"; titulo: string; texto: string };
 const AvisoContext = createContext<(aviso: Aviso) => void>(() => undefined);
 
@@ -144,8 +134,6 @@ export function useAviso() {
     error: (error: unknown) => mostrar({ tipo: "error", titulo: "No se pudo guardar", texto: mensajeDeError(error) }),
   };
 }
-
-// ---------- Carga de datos ----------
 
 export function useCarga<T>(cargar: () => Promise<T>, deps: unknown[]) {
   const [datos, setDatos] = useState<T | null>(null);
@@ -170,8 +158,6 @@ export function useCarga<T>(cargar: () => Promise<T>, deps: unknown[]) {
   const recargar = useCallback(() => setVersion((v) => v + 1), []);
   return { datos, error, cargando, recargar };
 }
-
-// ---------- Formato ----------
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 

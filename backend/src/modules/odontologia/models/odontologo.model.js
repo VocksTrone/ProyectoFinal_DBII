@@ -4,9 +4,6 @@ const { AppError } = require('../../../utils/helpers');
 
 const COLLECTION_NAME = 'odontologos';
 
-/**
- * Validador estricto para el documento Odontólogo
- */
 const validateOdontologo = (data, isUpdate = false) => {
   if (!data || typeof data !== 'object') {
     throw new AppError('Los datos del odontólogo deben ser un objeto válido', 400);

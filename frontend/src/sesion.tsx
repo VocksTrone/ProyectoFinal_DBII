@@ -11,7 +11,7 @@ type Sesion = {
 const SesionContext = createContext<Sesion>({ usuario: null, entrar: async () => undefined, salir: () => undefined });
 const CLAVE = "medis.sesion";
 
-// La sesión se guarda en sessionStorage: se borra al cerrar la pestaña
+// sessionStorage: la sesión se borra al cerrar la pestaña
 const leerGuardada = (): { token: string; usuario: Usuario } | null => {
   try {
     return JSON.parse(sessionStorage.getItem(CLAVE) || "null");
@@ -55,7 +55,6 @@ export function SesionProvider({ children }: { children: ReactNode }) {
 
 export const useSesion = () => useContext(SesionContext);
 
-// Usuario ya autenticado (solo dentro de la app)
 export const useUsuario = () => {
   const { usuario } = useSesion();
   if (!usuario) throw new Error("Sin sesión");

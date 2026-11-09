@@ -1,7 +1,7 @@
-// Datos de prueba del Laboratorio Clínico (MongoDB)
-// Uso, desde backend/:  node database/mongodb/01_laboratorio_datos.js
+// Carga los datos de prueba del laboratorio.
+// Uso (desde backend/): node database/mongodb/01_laboratorio_datos.js
 // Contraseña de los usuarios de prueba: Laboratorio2026!
-// OJO: borra todo lo que haya en las colecciones del laboratorio.
+// Ojo: borra lo que haya en las colecciones del laboratorio.
 
 const bcrypt = require('bcryptjs');
 const { mongoose, connectMongoDB } = require('../../src/config/mongodb');
@@ -10,7 +10,6 @@ const modelos = require('../../src/adaptadores/mongodb/modelos');
 const { Usuario, Paciente, CatalogoExamen } = modelos;
 
 const cargar = async () => {
-  // Colecciones limpias con sus índices
   for (const modelo of Object.values(modelos)) {
     await modelo.collection.drop().catch(() => {});
     await modelo.createCollection();

@@ -71,7 +71,6 @@ export default function Historial({ id }: Props) {
         </>}</div>
       </div>
 
-      {/* Alertas grandes: lo primero que debe ver el personal */}
       {(archivado || internamientoActivo || alergias.length > 0 || paciente.extra?.tipo_sangre) && <div className="ficha-alertas">
         {archivado && <div className="alerta alerta-archivado"><Icon name="archive" size={22} /><div><small>HISTORIAL ARCHIVADO</small><strong>Solo lectura desde el {fechaCorta(paciente.extra?.fecha_baja)}</strong><span>{paciente.extra?.motivo_baja}</span></div></div>}
         {internamientoActivo && !archivado && <button className="alerta alerta-internado" onClick={() => ir("internamiento", internamientoActivo.id)}><Icon name="heart" size={22} /><div><small>PACIENTE INTERNADO</small><strong>Desde el {fechaCorta(internamientoActivo.fecha_ingreso)}</strong><span>{internamientoActivo.motivo}</span></div><Icon name="chevron" size={16} /></button>}
@@ -103,7 +102,6 @@ export default function Historial({ id }: Props) {
   </div>;
 }
 
-// ---------- Resumen ----------
 
 function TarjetaContacto({ paciente }: { paciente: Paciente }) {
   const enc = paciente.extra?.encargado;
@@ -163,7 +161,6 @@ function ResumenLaboratorio({ paciente, historial, irOrdenes }: { paciente: Paci
   </div>;
 }
 
-// ---------- Consultas, diagnósticos y recetas ----------
 
 function ItemConsulta({ a }: { a: Atencion }) {
   const [anio, mes, dia] = a.fecha.slice(0, 10).split("-");
@@ -207,7 +204,6 @@ function Recetas({ atenciones }: { atenciones: Atencion[] }) {
   </section>)}</div>;
 }
 
-// ---------- Antecedentes ----------
 
 const TIPOS_ANTECEDENTE = ["alergia", "enfermedad crónica", "cirugía", "antecedente familiar", "otro"];
 
@@ -240,7 +236,6 @@ function Antecedentes({ paciente, historial, recargar }: { paciente: Paciente; h
   </section>;
 }
 
-// ---------- Hospital: internamientos del paciente ----------
 
 function InternamientosPaciente({ historial }: { historial: HistorialT | null }) {
   const { ir } = useNav();
@@ -251,7 +246,6 @@ function InternamientosPaciente({ historial }: { historial: HistorialT | null })
   </section>;
 }
 
-// ---------- Laboratorio: órdenes del paciente ----------
 
 function OrdenesPaciente({ atenciones, puedeCrear, nuevaOrden }: { atenciones: Atencion[]; puedeCrear: boolean; nuevaOrden: () => void }) {
   const { ir } = useNav();
@@ -273,7 +267,6 @@ function OrdenesPaciente({ atenciones, puedeCrear, nuevaOrden }: { atenciones: A
   </section>;
 }
 
-// ---------- Archivar ----------
 
 const MOTIVOS = ["Traslado a otra institución", "Fallecimiento", "Inactividad prolongada", "Baja administrativa"];
 

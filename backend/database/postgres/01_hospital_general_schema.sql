@@ -1,8 +1,8 @@
--- Hospital General (PostgreSQL / Supabase)
+-- Esquema del Hospital General
 
 begin;
 
--- Borrar tablas viejas de la plantilla
+-- Tablas que venían de la plantilla
 drop table if exists public.consultas cascade;
 drop table if exists public.medicos cascade;
 drop table if exists public.pacientes cascade;
@@ -66,7 +66,7 @@ create table paciente (
     correo varchar(100),
     tipo_sangre varchar(3) check (tipo_sangre in ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
     fecha_registro date not null default current_date,
-    -- Para archivar el historial
+    -- Archivo del historial
     estado varchar(20) not null default 'activo' check (estado in ('activo', 'archivado')),
     motivo_baja varchar(200),
     fecha_baja date,
@@ -126,7 +126,7 @@ create table tratamiento (
 create table receta (
     id_receta serial primary key,
     id_consulta int not null references consulta(id_consulta),
-    codigo varchar(20) not null unique, -- código de control
+    codigo varchar(20) not null unique,
     fecha date not null default current_date
 );
 

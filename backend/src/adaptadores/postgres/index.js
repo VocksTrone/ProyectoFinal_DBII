@@ -1,9 +1,7 @@
-// Adaptador del Hospital General (PostgreSQL)
 const { pgPool } = require('../../config/postgres');
 const { AppError } = require('../../utils/helpers');
 const { AHORA, vacio, esId, enTransaccion, medicoDeUsuario, bloquearPacienteActivo } = require('./comun');
 
-// Fila de paciente -> formato del contrato
 const aPaciente = (f) => ({
   id: String(f.id_paciente),
   dpi: f.dpi,
@@ -23,7 +21,6 @@ const aPaciente = (f) => ({
   },
 });
 
-// Consultas con sus diagnósticos, tratamientos y receta
 const cargarAtenciones = async (db, filtro, params) => {
   const { rows: consultas } = await db.query(
     `select c.id_consulta, c.fecha_consulta, c.motivo, c.notas, ci.id_cita, ci.hora,
@@ -204,7 +201,7 @@ const obtenerHistorial = async (id) => {
   };
 };
 
-// Archiva al paciente y cancela sus citas pendientes
+// También cancela sus citas pendientes
 const archivarPaciente = async (id, motivo) =>
   enTransaccion(async (db) => {
     const { rows } = await db.query(
@@ -229,10 +226,9 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
   const idConsulta = await enTransaccion(async (db) => {
     const idMedico = await medicoDeUsuario(db, usuario);
 
-    // Bloquea al paciente para que no lo archiven a medio registro
     await bloquearPacienteActivo(db, idPaciente);
 
-    // Usa la cita indicada o crea una al momento
+    // Sin cita indicada, se crea una en el momento
     let idCita = d.extra?.id_cita;
     if (idCita) {
       const { rows: c } = await db.query(

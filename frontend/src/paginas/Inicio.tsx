@@ -41,7 +41,6 @@ export default function Inicio() {
   </div>;
 }
 
-// ---------- Hospital ----------
 
 function PanelHospital() {
   const usuario = useUsuario();
@@ -94,7 +93,6 @@ function PanelHospital() {
   </>;
 }
 
-// ---------- Laboratorio ----------
 
 function PanelLaboratorio() {
   const usuario = useUsuario();
@@ -133,7 +131,6 @@ function PanelLaboratorio() {
   </>;
 }
 
-// ---------- Centro Médico Pediátrico ----------
 
 function PanelPediatria() {
   const usuario = useUsuario();
@@ -197,7 +194,6 @@ function PanelPediatria() {
   </>;
 }
 
-// ---------- Instituciones sin panel propio (adaptador en construcción) ----------
 
 function PanelGeneral() {
   const usuario = useUsuario();

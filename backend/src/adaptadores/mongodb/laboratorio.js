@@ -1,11 +1,10 @@
-// Funciones propias del Laboratorio Clínico (MongoDB)
 const { AppError } = require('../../utils/helpers');
 const { OrdenExamen, CatalogoExamen } = require('./modelos');
 const { vacio, esId, enTransaccion, aPaciente, aAtencion, nuevoExamen } = require('./comun');
 
 const ESTADOS_ABIERTOS = ['pendiente', 'en_proceso'];
 
-// Lista de trabajo: por defecto, órdenes sin terminar (las más antiguas primero)
+// Por defecto solo las abiertas, de la más antigua a la más reciente
 const listarOrdenes = async ({ estado }) => {
   const filtro = estado ? { estado } : { estado: { $in: ESTADOS_ABIERTOS } };
   const ordenes = await OrdenExamen.find(filtro)
@@ -22,7 +21,6 @@ const listarOrdenes = async ({ estado }) => {
   }));
 };
 
-// Reporte: orden + paciente + parámetros de cada examen
 const obtenerOrden = async (id) => {
   if (!esId(id)) return null;
   const orden = await OrdenExamen.findById(id).populate('paciente_id').lean();
@@ -41,7 +39,6 @@ const obtenerOrden = async (id) => {
   return { ...atencion, paciente: orden.paciente_id ? aPaciente(orden.paciente_id) : null };
 };
 
-// Busca la orden dentro de la transacción y revisa que siga abierta
 const ordenAbierta = async (id, session) => {
   const orden = esId(id) ? await OrdenExamen.findById(id).session(session) : null;
   if (!orden) throw new AppError('Orden no encontrada', 404);
@@ -66,7 +63,7 @@ const agregarExamenes = async (id, codigos) =>
     return aAtencion(orden.toObject());
   });
 
-// Guarda y valida el resultado de un examen; los valores deben calzar con su catálogo
+// Los valores tienen que coincidir con los parámetros del examen en el catálogo
 const registrarResultado = async (idOrden, idExamen, { valores, observaciones }, usuario) =>
   enTransaccion(async (session) => {
     const orden = await ordenAbierta(idOrden, session);
@@ -95,7 +92,6 @@ const registrarResultado = async (idOrden, idExamen, { valores, observaciones },
     examen.fecha_procesamiento = new Date();
     examen.estado = 'validado';
 
-    // Completa la orden cuando todos sus exámenes están validados
     orden.estado = orden.resultados.every((r) => r.estado === 'validado') ? 'completada' : 'en_proceso';
     await orden.save({ session });
     return aAtencion(orden.toObject());

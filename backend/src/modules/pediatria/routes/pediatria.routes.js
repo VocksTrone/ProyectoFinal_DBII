@@ -6,15 +6,15 @@ const { soloInstitucion } = require('../../../middlewares/adaptador');
 
 const router = Router();
 
-// Estado del módulo (informativo, abierto o con token)
+// Estado del módulo
 router.get('/', c.getStatus);
 
-// Todas las operaciones de datos requieren token y pertenecer a 'pediatria'
+// De aquí en adelante: token y usuario de pediatría
 router.use(authenticate, soloInstitucion('pediatria'));
 
 const medico = authorizeRoles('medico');
 
-// Tutores / Encargados
+// Encargados
 router.get('/tutores', c.listarTutores);
 router.post('/tutores', c.crearTutor);
 router.get('/tutores/:id', c.obtenerTutor);
@@ -22,15 +22,15 @@ router.get('/tutores/:id', c.obtenerTutor);
 // Vacunas del esquema
 router.get('/vacunas', c.listarVacunas);
 
-// Controles antropométricos de crecimiento y desarrollo
+// Controles de crecimiento
 router.get('/pacientes/:id/controles', c.obtenerControles);
 router.post('/pacientes/:id/controles', medico, c.registrarControl);
 
-// Carné y esquema de vacunación del paciente
+// Vacunas del paciente
 router.get('/pacientes/:id/vacunas', c.obtenerEsquema);
 router.post('/pacientes/:id/vacunas', medico, c.registrarVacuna);
 
-// Compatibilidad con rutas directas del módulo
+// Rutas anteriores, se dejan por compatibilidad
 router.get('/pacientes', c.getPacientes);
 router.post('/pacientes', c.createPaciente);
 router.post('/controles', medico, c.createControl);

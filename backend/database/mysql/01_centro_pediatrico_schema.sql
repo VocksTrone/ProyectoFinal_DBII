@@ -1,12 +1,7 @@
--- =====================================================================
--- Centro Médico Pediátrico (MySQL / InnoDB)
--- Esquema relacional normalizado para atención pediátrica
--- =====================================================================
-
--- Desactivar temporalmente revisión de llaves foráneas para recreación segura
+-- Se desactivan las llaves foráneas para poder recrear las tablas
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Eliminar tablas viejas en inglés si existen en la base
+-- Tablas de la versión anterior (en inglés)
 DROP TABLE IF EXISTS antecedent;
 DROP TABLE IF EXISTS attendent;
 DROP TABLE IF EXISTS diagnosis;
@@ -25,7 +20,6 @@ DROP TABLE IF EXISTS treatment;
 DROP TABLE IF EXISTS vaccination_record;
 DROP TABLE IF EXISTS vaccination;
 
--- Eliminar tablas en español si ya existían
 DROP TABLE IF EXISTS detallepago;
 DROP TABLE IF EXISTS pago;
 DROP TABLE IF EXISTS detallefactura;
@@ -47,9 +41,6 @@ DROP TABLE IF EXISTS encargado;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- -----------------------------------------------------
--- 1. Encargado (Padre, madre o tutor legal del menor)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS encargado (
     id_encargado INT AUTO_INCREMENT PRIMARY KEY,
     nombres VARCHAR(100) NOT NULL,
@@ -61,9 +52,6 @@ CREATE TABLE IF NOT EXISTS encargado (
     dpi VARCHAR(13) UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 2. Médico (Pediatras del centro)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS medico (
     id_medico INT AUTO_INCREMENT PRIMARY KEY,
     nombres VARCHAR(100) NOT NULL,
@@ -73,9 +61,6 @@ CREATE TABLE IF NOT EXISTS medico (
     correo VARCHAR(100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 3. Usuario (Autenticación @pediatria)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(50) NOT NULL UNIQUE,
@@ -88,9 +73,6 @@ CREATE TABLE IF NOT EXISTS usuario (
     CONSTRAINT fk_usuario_medico FOREIGN KEY (id_medico) REFERENCES medico(id_medico) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 4. Paciente (Infante / menor de edad)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS paciente (
     id_paciente INT AUTO_INCREMENT PRIMARY KEY,
     nombres VARCHAR(100) NOT NULL,
@@ -112,9 +94,6 @@ CREATE TABLE IF NOT EXISTS paciente (
     CONSTRAINT fk_paciente_encargado FOREIGN KEY (id_encargado) REFERENCES encargado(id_encargado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 5. Consulta (Atención pediátrica)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS consulta (
     id_consulta INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente INT NOT NULL,
@@ -126,9 +105,6 @@ CREATE TABLE IF NOT EXISTS consulta (
     CONSTRAINT fk_consulta_medico FOREIGN KEY (id_medico) REFERENCES medico(id_medico)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 6. Diagnóstico
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS diagnostico (
     id_diagnostico INT AUTO_INCREMENT PRIMARY KEY,
     id_consulta INT NOT NULL,
@@ -141,9 +117,6 @@ CREATE TABLE IF NOT EXISTS diagnostico (
     CONSTRAINT fk_diagnostico_consulta FOREIGN KEY (id_consulta) REFERENCES consulta(id_consulta) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 7. Tratamiento
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS tratamiento (
     id_tratamiento INT AUTO_INCREMENT PRIMARY KEY,
     id_diagnostico INT NOT NULL,
@@ -154,9 +127,6 @@ CREATE TABLE IF NOT EXISTS tratamiento (
     CONSTRAINT fk_tratamiento_diagnostico FOREIGN KEY (id_diagnostico) REFERENCES diagnostico(id_diagnostico) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 8. Medicamento (Catálogo pediátrico)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS medicamento (
     id_medicamento INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(120) NOT NULL,
@@ -165,9 +135,6 @@ CREATE TABLE IF NOT EXISTS medicamento (
     UNIQUE KEY uq_medicamento (nombre, presentacion, concentracion)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 9. Receta
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS receta (
     id_receta INT AUTO_INCREMENT PRIMARY KEY,
     id_consulta INT NOT NULL,
@@ -176,9 +143,6 @@ CREATE TABLE IF NOT EXISTS receta (
     CONSTRAINT fk_receta_consulta FOREIGN KEY (id_consulta) REFERENCES consulta(id_consulta) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 10. DetalleReceta
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS detallereceta (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_receta INT NOT NULL,
@@ -192,9 +156,6 @@ CREATE TABLE IF NOT EXISTS detallereceta (
     CONSTRAINT fk_detalle_medicamento FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 11. Antecedente (Alergias, cirugías, patologías)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS antecedente (
     id_antecedente INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente INT NOT NULL,
@@ -204,9 +165,6 @@ CREATE TABLE IF NOT EXISTS antecedente (
     CONSTRAINT fk_antecedente_paciente FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 12. ControlCrecimiento (Antropometría y percentiles)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS controlcrecimiento (
     id_control INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente INT NOT NULL,
@@ -219,9 +177,6 @@ CREATE TABLE IF NOT EXISTS controlcrecimiento (
     CONSTRAINT fk_control_paciente FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 13. Vacuna (Catálogo del esquema de vacunación)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS vacuna (
     id_vacuna INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
@@ -229,9 +184,6 @@ CREATE TABLE IF NOT EXISTS vacuna (
     dosis_requeridas INT NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 14. RegistroVacunacion (Dosis aplicadas y seguimiento)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS registrovacunacion (
     id_registro INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente INT NOT NULL,
@@ -247,9 +199,6 @@ CREATE TABLE IF NOT EXISTS registrovacunacion (
     CONSTRAINT fk_regvac_medico FOREIGN KEY (id_medico) REFERENCES medico(id_medico) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 15. Factura (Facturación de la atención)
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS factura (
     id_factura INT AUTO_INCREMENT PRIMARY KEY,
     id_consulta INT NOT NULL,
@@ -260,9 +209,6 @@ CREATE TABLE IF NOT EXISTS factura (
     CONSTRAINT fk_factura_consulta FOREIGN KEY (id_consulta) REFERENCES consulta(id_consulta)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 16. DetalleFactura
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS detallefactura (
     id_detalle_factura INT AUTO_INCREMENT PRIMARY KEY,
     id_factura INT NOT NULL,
@@ -273,9 +219,6 @@ CREATE TABLE IF NOT EXISTS detallefactura (
     CONSTRAINT fk_detfactura_factura FOREIGN KEY (id_factura) REFERENCES factura(id_factura) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 17. Pago
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS pago (
     id_pago INT AUTO_INCREMENT PRIMARY KEY,
     id_factura INT NOT NULL,
@@ -284,9 +227,6 @@ CREATE TABLE IF NOT EXISTS pago (
     CONSTRAINT fk_pago_factura FOREIGN KEY (id_factura) REFERENCES factura(id_factura)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- 18. DetallePago
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS detallepago (
     id_detalle_pago INT AUTO_INCREMENT PRIMARY KEY,
     id_pago INT NOT NULL,
@@ -296,9 +236,6 @@ CREATE TABLE IF NOT EXISTS detallepago (
     CONSTRAINT fk_detpago_pago FOREIGN KEY (id_pago) REFERENCES pago(id_pago) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------
--- Índices para optimización de lectura frecuente (Sección 5.4.1)
--- -----------------------------------------------------
 CREATE INDEX idx_paciente_encargado ON paciente(id_encargado);
 CREATE INDEX idx_paciente_nombres ON paciente(apellidos, nombres);
 CREATE INDEX idx_consulta_paciente ON consulta(id_paciente);

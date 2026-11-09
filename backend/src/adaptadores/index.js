@@ -11,7 +11,7 @@ const carpetas = {
 
 const instituciones = Object.keys(carpetas);
 
-// Devuelve el adaptador o null si todavía no está implementado
+// null si esa institución todavía no tiene adaptador
 const obtenerAdaptador = (institucion) => {
   const carpeta = carpetas[institucion];
   if (!carpeta) return null;

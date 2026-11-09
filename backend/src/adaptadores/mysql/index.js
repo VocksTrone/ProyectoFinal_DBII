@@ -1,8 +1,3 @@
-// =====================================================================
-// Adaptador del Centro Médico Pediátrico (MySQL)
-// Implementa el contrato común de la API para persistencia en MySQL
-// =====================================================================
-
 const { mysqlPool } = require('../../config/mysql');
 const { AppError } = require('../../utils/helpers');
 const {
@@ -15,7 +10,6 @@ const {
   aPaciente,
 } = require('./comun');
 
-// Consulta base de paciente con los datos de su encargado
 const SELECT_PACIENTE = `
   SELECT p.*,
          e.nombres AS encargado_nombres,
@@ -29,7 +23,6 @@ const SELECT_PACIENTE = `
   LEFT JOIN encargado e ON e.id_encargado = p.id_encargado
 `;
 
-// Consultas pediátricas con diagnósticos, tratamientos y recetas
 const cargarAtenciones = async (conn, filtro, params) => {
   const [consultas] = await conn.query(
     `SELECT c.id_consulta, c.fecha_consulta, c.motivo, c.notas, c.id_medico,
@@ -120,11 +113,7 @@ const cargarAtenciones = async (conn, filtro, params) => {
   });
 };
 
-// =====================================================================
-// FUNCIONES DEL CONTRATO
-// =====================================================================
 
-// 1. Buscar usuario para login (@pediatria)
 const buscarUsuario = async (usuario) => {
   const [rows] = await mysqlPool.query(
     `SELECT id_usuario AS id, nombre, rol, password_hash
@@ -135,7 +124,6 @@ const buscarUsuario = async (usuario) => {
   return rows[0] || null;
 };
 
-// 2. Buscar pacientes (por texto o DPI/CUI)
 const buscarPacientes = async (texto) => {
   const t = vacio(texto) || '';
   const [rows] = await mysqlPool.query(
@@ -148,10 +136,8 @@ const buscarPacientes = async (texto) => {
   return rows.map(aPaciente);
 };
 
-// 3. Crear nuevo paciente pediátrico
 const crearPaciente = async (d) => {
   return enTransaccion(async (conn) => {
-    // Si viene información del encargado/tutor o se referencia uno existente
     let idEncargado = d.extra?.id_encargado || d.id_encargado;
 
     if (!idEncargado && d.extra?.encargado) {
@@ -172,7 +158,7 @@ const crearPaciente = async (d) => {
       idEncargado = resEnc.insertId;
     }
 
-    // Si aún no hay encargado, obtener el primer encargado existente o crear uno genérico
+    // Sin encargado se usa el primero que exista o uno genérico
     if (!idEncargado) {
       const [encargados] = await conn.query('SELECT id_encargado FROM encargado LIMIT 1');
       if (encargados.length) {
@@ -209,14 +195,12 @@ const crearPaciente = async (d) => {
   });
 };
 
-// 4. Obtener paciente por ID
 const obtenerPaciente = async (id) => {
   if (!esId(id)) return null;
   const [rows] = await mysqlPool.query(`${SELECT_PACIENTE} WHERE p.id_paciente = ?`, [id]);
   return rows[0] ? aPaciente(rows[0]) : null;
 };
 
-// 5. Obtener historial clínico pediátrico completo
 const obtenerHistorial = async (id) => {
   const paciente = await obtenerPaciente(id);
   if (!paciente) return null;
@@ -285,7 +269,6 @@ const obtenerHistorial = async (id) => {
   };
 };
 
-// 6. Archivar o desactivar historial clínico del paciente pediátrico
 const archivarPaciente = async (id, motivo) =>
   enTransaccion(async (conn) => {
     const [res] = await conn.query(
@@ -303,7 +286,7 @@ const archivarPaciente = async (id, motivo) =>
     return aPaciente(rows[0]);
   });
 
-// 7. Registrar atención pediátrica (consulta + diagnósticos + receta en transacción atómica)
+// Consulta, diagnósticos y receta en una sola transacción
 const registrarAtencion = async (idPaciente, d, usuario) => {
   const idConsulta = await enTransaccion(async (conn) => {
     const idMedico = await medicoDeUsuario(conn, usuario);
@@ -365,7 +348,6 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
   return atencion;
 };
 
-// 8. Catálogos comunes y específicos de pediatría
 const catalogos = {
   medicamentos: `SELECT id_medicamento AS id, nombre, presentacion, concentracion FROM medicamento ORDER BY nombre`,
   vacunas: `SELECT id_vacuna AS id, nombre, enfermedad_previene, dosis_requeridas FROM vacuna ORDER BY nombre`,

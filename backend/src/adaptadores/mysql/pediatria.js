@@ -1,8 +1,3 @@
-// =====================================================================
-// Funciones específicas del Centro Médico Pediátrico (MySQL)
-// Cubre controles antropométricos, vacunación y gestión de tutores
-// =====================================================================
-
 const { mysqlPool } = require('../../config/mysql');
 const { AppError } = require('../../utils/helpers');
 const {
@@ -14,9 +9,6 @@ const {
   bloquearPacienteActivo,
 } = require('./comun');
 
-// -----------------------------------------------------
-// 1. TUTORES / ENCARGADOS
-// -----------------------------------------------------
 
 const aTutor = (f) => ({
   id: String(f.id_encargado),
@@ -83,15 +75,12 @@ const crearTutor = async (d) => {
   return aTutor({ id_encargado: res.insertId, ...d });
 };
 
-// -----------------------------------------------------
-// 2. CONTROLES DE CRECIMIENTO Y DESARROLLO (7.2.6 y 7.2.7)
-// -----------------------------------------------------
 
 const registrarControlCrecimiento = async (idPaciente, d) =>
   enTransaccion(async (conn) => {
     await bloquearPacienteActivo(conn, idPaciente);
 
-    // Si no se envía edad en meses, se calcula a partir de la fecha de nacimiento
+    // Sin edad en meses, se calcula con la fecha de nacimiento
     let edadMeses = d.edad_meses;
     if (edadMeses === undefined || edadMeses === null) {
       const [p] = await conn.query('SELECT fecha_nacimiento FROM paciente WHERE id_paciente = ?', [idPaciente]);
@@ -153,9 +142,6 @@ const obtenerControlesCrecimiento = async (idPaciente) => {
   }));
 };
 
-// -----------------------------------------------------
-// 3. VACUNACIÓN Y ESQUEMA (7.2.8 y 7.2.9)
-// -----------------------------------------------------
 
 const listarVacunas = async () => {
   const [rows] = await mysqlPool.query('SELECT * FROM vacuna ORDER BY nombre');
@@ -180,7 +166,7 @@ const registrarVacunacion = async (idPaciente, d, usuario) =>
       }
     }
 
-    // Si no se especifica el número de dosis, se auto-incrementa según las dosis previas
+    // Sin número de dosis, sigue a la última registrada
     let numDosis = d.numero_dosis;
     if (!numDosis) {
       const [previas] = await conn.query(

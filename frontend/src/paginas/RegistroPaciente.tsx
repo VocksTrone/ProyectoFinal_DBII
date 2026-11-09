@@ -44,7 +44,6 @@ export default function RegistroPaciente() {
     value: f[nombre],
     onChange: (e: { target: { value: string } }) => setF({ ...f, [nombre]: e.target.value }),
   });
-  // Solo dígitos para DPI y teléfono
   const numerico = (nombre: "dpi" | "telefono", max: number) => ({
     value: f[nombre],
     inputMode: "numeric" as const,
@@ -75,7 +74,7 @@ export default function RegistroPaciente() {
       aviso.ok(`${paciente.nombres} ${paciente.apellidos} fue registrado en ${INSTITUCIONES[usuario.institucion].nombre}.`);
       ir("historial", paciente.id);
     } catch (err) {
-      // Errores del servidor en los campos (ej. DPI duplicado)
+      // Ej. DPI duplicado
       if (err instanceof ApiError && err.status === 409) setErrores({ dpi: "Ya existe un paciente con este DPI" });
       aviso.error(err);
     } finally {

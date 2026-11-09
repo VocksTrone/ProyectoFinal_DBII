@@ -4,22 +4,13 @@ const dns = require('dns');
 const mongoose = require('mongoose');
 const config = require('./env');
 
-/**
- * Resuelve la URI de conexión para MongoDB.
- * Soporta:
- * 1. URI directa (mongodb:// o mongodb+srv://)
- * 2. Ruta a archivo JSON con credenciales en MONGO_URI o MONGO_CREDENTIALS_PATH
- * 3. Detección automática en credentials/laboratorio_clinico_mongodb.json
- */
 const resolveMongoUri = () => {
   const rawUri = (config.mongodb.uri || '').trim();
 
-  // Si ya es una URI válida de MongoDB
   if (rawUri.startsWith('mongodb://') || rawUri.startsWith('mongodb+srv://')) {
     return rawUri;
   }
 
-  // Candidatos para archivo de credenciales JSON
   const candidatePaths = [
     rawUri ? path.resolve(process.cwd(), rawUri) : null,
     rawUri ? path.resolve(__dirname, '../../', rawUri) : null,
@@ -54,7 +45,7 @@ const resolveMongoUri = () => {
 const connectMongoDB = async () => {
   const uri = resolveMongoUri();
 
-  // En Windows o redes que rechazan consultas DNS SRV, configurar DNS público para mongodb+srv
+  // Algunas redes (y Windows) fallan con DNS SRV; se usan DNS públicos
   if (uri.startsWith('mongodb+srv://')) {
     try {
       dns.setServers(['8.8.8.8', '1.1.1.1']);

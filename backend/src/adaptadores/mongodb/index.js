@@ -1,4 +1,3 @@
-// Adaptador del Laboratorio Clínico (MongoDB)
 const { AppError } = require('../../utils/helpers');
 const { Usuario, Paciente, OrdenExamen, CatalogoExamen, Contador } = require('./modelos');
 const { vacio, esId, enTransaccion, aPaciente, aAtencion, nuevoExamen } = require('./comun');
@@ -58,7 +57,7 @@ const obtenerHistorial = async (id) => {
   return { paciente, antecedentes: [], atenciones: ordenes.map(aAtencion) };
 };
 
-// Archiva al paciente y cancela sus órdenes pendientes
+// También cancela sus órdenes pendientes
 const archivarPaciente = async (id, motivo) =>
   enTransaccion(async (session) => {
     const paciente = await Paciente.findOneAndUpdate(
@@ -72,7 +71,7 @@ const archivarPaciente = async (id, motivo) =>
     return aPaciente(paciente);
   });
 
-// Atención = nueva orden de examen con sus exámenes pendientes
+// La atención crea una orden con sus exámenes pendientes
 const registrarAtencion = async (idPaciente, d, usuario) => {
   if (d.receta) throw new AppError('El laboratorio no emite recetas', 400);
 
@@ -85,7 +84,7 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
   }
 
   const orden = await enTransaccion(async (session) => {
-    // Marca al paciente: si alguien lo archiva al mismo tiempo, la transacción choca
+    // Se escribe en el paciente para que un archivado simultáneo choque con esta transacción
     const marcado = await Paciente.updateOne(
       { _id: idPaciente, estado: 'activo' },
       { ultima_atencion: new Date() },
@@ -97,7 +96,7 @@ const registrarAtencion = async (idPaciente, d, usuario) => {
     const faltan = codigos.filter((c) => !examenes.some((e) => e.codigo === c));
     if (faltan.length) throw new AppError(`Exámenes no encontrados: ${faltan.join(', ')}`, 400);
 
-    // Si algo falla después, el correlativo también se deshace
+    // El contador va dentro de la transacción: si algo falla, el número no se pierde
     const contador = await Contador.findOneAndUpdate(
       { _id: 'ordenes' },
       { $inc: { valor: 1 } },

@@ -7,9 +7,6 @@ class OdontologiaController {
     return sendSuccess(res, status, 'Información del módulo Clínica Odontológica (Firestore)');
   });
 
-  // ==========================================
-  // PACIENTES
-  // ==========================================
   getPacientes = asyncHandler(async (req, res) => {
     const limit = req.query.limit || 100;
     const pacientes = await odontologiaService.getAllPacientes(limit);
@@ -36,9 +33,6 @@ class OdontologiaController {
     return sendSuccess(res, paciente, 'Entrada de historial odontológico agregada con éxito', 201);
   });
 
-  // ==========================================
-  // ODONTOLOGOS
-  // ==========================================
   getOdontologos = asyncHandler(async (req, res) => {
     const limit = req.query.limit || 100;
     const odontologos = await odontologiaService.getAllOdontologos(limit);
@@ -60,9 +54,6 @@ class OdontologiaController {
     return sendSuccess(res, odontologo, 'Odontólogo actualizado con éxito');
   });
 
-  // ==========================================
-  // CITAS
-  // ==========================================
   getCitas = asyncHandler(async (req, res) => {
     const { paciente_id, odontologo_id, estado, limit } = req.query;
     const citas = await odontologiaService.getAllCitas({ paciente_id, odontologo_id, estado, limit });
@@ -90,9 +81,6 @@ class OdontologiaController {
     return sendSuccess(res, cita, `Estado de la cita actualizado a "${estado}"`);
   });
 
-  // ==========================================
-  // PAGOS (Mixtos y Honorarios)
-  // ==========================================
   getPagos = asyncHandler(async (req, res) => {
     const { paciente_id, cita_id, estado_pago, limit } = req.query;
     const pagos = await odontologiaService.getAllPagos({ paciente_id, cita_id, estado_pago, limit });
